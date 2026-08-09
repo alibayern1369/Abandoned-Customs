@@ -37,8 +37,28 @@ async function main() {
 
   try {
     const existing = await db.select().from(users).where(eq(users.username, username)).limit(1);
+    const reset = process.env.SEED_ADMIN_RESET === '1';
+
     if (existing.length > 0) {
-      console.log(`Seed skipped: user "${username}" already exists (${existing[0].id}).`);
+      if (!reset) {
+        console.log(`Seed skipped: user "${username}" already exists (${existing[0].id}).`);
+        console.log('To reset password: set SEED_ADMIN_RESET=1 and re-run seed.');
+        return;
+      }
+
+      await db
+        .update(users)
+        .set({
+          passwordHash: hashPassword(password),
+          displayName,
+          isActive: true,
+        })
+        .where(eq(users.id, existing[0].id));
+
+      const fingerprint = createHash('sha256').update(password).digest('hex').slice(0, 8);
+      console.log(
+        `Reset admin password for "${username}" (${existing[0].id}), pwd_fp=${fingerprint}`,
+      );
       return;
     }
 

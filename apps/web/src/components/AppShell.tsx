@@ -8,6 +8,7 @@ const NAV = [
   { href: '/imports/upload', label: 'آپلود اکسل' },
   { href: '/reviews', label: 'صف بررسی' },
   { href: '/imports', label: 'تاریخچه ورود' },
+  { href: '/settings', label: 'تنظیمات / رمز عبور' },
 ] as const;
 
 export function AppShell({
@@ -43,14 +44,22 @@ export function AppShell({
           <p className="text-xs text-muted">
             {user.username} · {user.role}
           </p>
-          <form action={logoutAction} className="mt-3">
-            <button
-              type="submit"
-              className="text-sm text-danger underline-offset-2 hover:underline"
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <Link
+              href="/settings"
+              className="text-sm text-accent underline-offset-2 hover:underline"
             >
-              خروج
-            </button>
-          </form>
+              تغییر رمز
+            </Link>
+            <form action={logoutAction}>
+              <button
+                type="submit"
+                className="text-sm text-danger underline-offset-2 hover:underline"
+              >
+                خروج
+              </button>
+            </form>
+          </div>
         </div>
       </aside>
       <div className="min-w-0">
@@ -59,11 +68,16 @@ export function AppShell({
             <p className="text-sm font-semibold">{user.displayName}</p>
             <p className="text-xs text-muted">{user.role}</p>
           </div>
-          <form action={logoutAction}>
-            <button type="submit" className="text-sm text-danger">
-              خروج
-            </button>
-          </form>
+          <div className="flex items-center gap-3">
+            <Link href="/settings" className="text-sm text-accent">
+              رمز
+            </Link>
+            <form action={logoutAction}>
+              <button type="submit" className="text-sm text-danger">
+                خروج
+              </button>
+            </form>
+          </div>
         </header>
         <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>

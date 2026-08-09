@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
-import { users, verifyPassword } from '@metrookeh/db';
+import { hashPassword, users, verifyPassword } from '@metrookeh/db';
 import { getDb } from './db';
 import { ensureEnv } from './env';
 
@@ -118,4 +118,39 @@ export async function logoutSession(): Promise<void> {
     path: '/',
     maxAge: 0,
   });
+}
+
+export async function changePasswordForUser(input: {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  const currentPassword = input.currentPassword;
+  const newPassword = input.newPassword.trim();
+
+  if (!currentPassword || !newPassword) {
+    return { ok: false, error: 'رمز فعلی و رمز جدید الزامی است.' };
+  }
+  if (newPassword.length < 8) {
+    return { ok: false, error: 'رمز جدید باید حداقل ۸ کاراکتر باشد.' };
+  }
+  if (newPassword === currentPassword) {
+    return { ok: false, error: 'رمز جدید باید با رمز فعلی متفاوت باشد.' };
+  }
+
+  const db = getDb();
+  const [row] = await db.select().from(users).where(eq(users.id, input.userId)).limit(1);
+  if (!row || !row.isActive) {
+    return { ok: false, error: 'کاربر یافت نشد.' };
+  }
+  if (!verifyPassword(currentPassword, row.passwordHash)) {
+    return { ok: false, error: 'رمز فعلی نادرست است.' };
+  }
+
+  await db
+    .update(users)
+    .set({ passwordHash: hashPassword(newPassword) })
+    .where(eq(users.id, input.userId));
+
+  return { ok: true };
 }
