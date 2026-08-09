@@ -4,18 +4,44 @@ services:
     container_name: metrookeh-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: metrookeh
-      POSTGRES_PASSWORD: metrookeh
-      POSTGRES_DB: metrookeh
+      POSTGRES_USER: ${POSTGRES_USER:-metrookeh}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-metrookeh}
+      POSTGRES_DB: ${POSTGRES_DB:-metrookeh}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - metrookeh_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U metrookeh -d metrookeh"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: metrookeh-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-metrookeh}
+      POSTGRES_DB: ${POSTGRES_DB:-metrookeh}
+      # Always use the Docker service hostname (not localhost from host .env)
+      DATABASE_URL: postgresql://${POSTGRES_USER:-metrookeh}:${POSTGRES_PASSWORD:-metrookeh}@postgres:5432/${POSTGRES_DB:-metrookeh}
+      AUTH_SECRET: ${AUTH_SECRET}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      SEED_ADMIN_USERNAME: ${SEED_ADMIN_USERNAME:-admin}
+      SEED_ADMIN_DISPLAY_NAME: ${SEED_ADMIN_DISPLAY_NAME:-Administrator}
+      SEED_ADMIN_RESET: ${SEED_ADMIN_RESET:-0}
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   metrookeh_pgdata:

@@ -118,8 +118,17 @@ Development admin only, via `npm run db:seed`.
 
 ## Migrations
 
+Full stack (migrate runs automatically when the `web` container starts):
+
 ```bash
-docker compose up -d
+cp .env.example .env
+docker compose up --build -d
+```
+
+Host-side migrate (Postgres container only):
+
+```bash
+docker compose up -d postgres
 cp .env.example .env   # set SEED_ADMIN_PASSWORD
 npm install
 npm run db:migrate

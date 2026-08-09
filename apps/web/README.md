@@ -13,15 +13,17 @@ Next.js App Router RTL dashboard for Metrookeh.
 
 ## Dev
 
-From repo root:
+From repo root (Postgres only in Docker, Next on the host):
 
 ```bash
 cp .env.example .env   # set DATABASE_URL, SEED_ADMIN_PASSWORD, AUTH_SECRET
-docker compose up -d
+docker compose up -d postgres
 npm install
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
+
+For full Docker (web + Postgres), see the root README: `docker compose up --build -d`.
 
 Open http://localhost:3000 and sign in with the seeded admin.

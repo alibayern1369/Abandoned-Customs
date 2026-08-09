@@ -7,6 +7,9 @@ const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..')
 loadEnvConfig(rootDir);
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  // Monorepo: include workspace packages in the standalone trace
+  outputFileTracingRoot: rootDir,
   transpilePackages: ['@metrookeh/db', '@metrookeh/domain', '@metrookeh/import-core'],
   serverExternalPackages: ['postgres', 'xlsx'],
   webpack: (config) => {
