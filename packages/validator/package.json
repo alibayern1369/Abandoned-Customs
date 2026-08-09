@@ -1,0 +1,14 @@
+{
+  "name": "@metrookeh/validator",
+  "version": "1.0.0",
+  "description": "Read-only deterministic validator for three Metrookeh Excel sources (golden reference)",
+  "type": "module",
+  "main": "src/run.js",
+  "scripts": {
+    "validate": "node src/run.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

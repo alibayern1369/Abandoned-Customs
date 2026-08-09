@@ -1,0 +1,447 @@
+﻿# Technical Specification — Deterministic Transform of Three Excel Sources
+
+Based on direct analysis of the three files. Conclusions marked **CONFIRMED** / **PROBABLE** / **UNKNOWN**.
+
+---
+
+## 1. Confirmed Business Rules
+
+| Rule | Status |
+|------|--------|
+| Kootaj is unique; one Kootaj = one main abandoned-goods record | **CONFIRMED** (business + data) |
+| One Kootaj may have multiple warehouse receipts / rows / items | **CONFIRMED** (business); in these samples, multi-row = multiple **items**, almost always one warehouse receipt |
+| File 2 may contain existing and new Kootajs; existing → no duplicate / no overwrite | **CONFIRMED** (business) |
+| File 3 letter number/date live in dedicated columns; do not parse them from Description | **CONFIRMED** (business); see §9 for which columns are actually populated |
+| One Kootaj ↔ at most one Letter | **CONFIRMED** (business); File 3 can have multiple *automation rows* per Kootaj (drafts) — see §9 |
+| File 2 import is INSERT-ONLY for new Kootajs | **CONFIRMED** (business) |
+
+---
+
+## 2. File 1 Structure
+
+**File:** `متروکه گمرک کیش .xlsx`  
+**Status:** **CONFIRMED**
+
+| Sheet | Rows | Role |
+|-------|------|------|
+| متروکه کلی | 624 | Master / full set |
+| متروکه خارج شده | 280 | Partition (exited) |
+| متروکه خارج نشده | 249 | Partition (not exited) |
+
+Same 16 columns on all sheets. **Import from `متروکه کلی` only** (or partitions with de-dupe). Combining sheets without de-dupe doubles rows.
+
+**Columns:**
+
+| Column | Role |
+|--------|------|
+| ردیف | Excel row index (not a business item-row id) |
+| شماره کوتاژ | Parent key |
+| تاریخ کوتاژ | Kootaj-level datetime |
+| کد تعرفه | Item-level |
+| شرح کالا | Item-level |
+| وزن ناخالص | Item-level (varies by row) |
+| ارزش ریالی کالا | Kootaj-level total (repeated on every item row) |
+| ارزش ارزی اظهارنامه | Kootaj-level total (repeated) |
+| شماره قبض انبار | Warehouse receipt (same across item rows in this sample) |
+| محل ارزیابی | Descriptive (always `گمرک کیش` here) |
+| مرحله اظهارنامه | Descriptive (always `درب خروج` here) |
+| حقوق استنباطی گمرک | Kootaj-level (repeated; empty on 95 newer rows) |
+| واریزی اموال تملیکی | Always `0` in this sample |
+| وضعیت کالا | Abandonment/exit status (`خارج نشده` / `در انتظار پرداخت`) |
+| تاریخ اعلام به اموال تملیکی | Announcement ref/date (mixed free text) |
+| تاریخ خروج کالا از گمرک توسط اموال تملیکی | Exit status/ref (`کالا از گمرک خارج نشده است` or code-date text) |
+
+**No letter columns in File 1.** **CONFIRMED**
+
+---
+
+## 3. File 2 Structure
+
+**File:** `نمونه خروجی از سامانه.xlsx`  
+**Sheet:** `گزارش اکسل` — 607 rows, 27 columns  
+**Status:** **CONFIRMED**
+
+**Critical technical finding (not a challenge to uniqueness):** there is **no column named `شماره کوتاژ`**.
+
+Effective Kootaj identifier in this export:
+
+> **`شماره مجوز بارگیری`**
+
+Evidence: for all 554 File 2 rows whose مجوز exists in File 1, `شماره مجوز بارگیری` = File 1 `شماره کوتاژ` with **0 inconsistencies**.
+
+| Column | Observed level |
+|--------|----------------|
+| شماره مجوز بارگیری | **Kootaj key** (in this sample) |
+| زمان کوتاژ | Kootaj datetime |
+| نام/کدینگ صاحب کالا، کارگزار، اظهارکننده | Kootaj-level (stable across item rows) |
+| نوع ارز، نرخ ارز | Kootaj-level |
+| ارزش ارزی/ریالی اظهارنامه | Kootaj-level **repeated totals** |
+| کشور مبدا/صادرکننده/طرف معامله/سازنده | Mostly Kootaj; سازنده can differ by item |
+| شماره قبض انبار | Receipt-level (one per Kootaj in this sample) |
+| شماره قبض انبار الکترونیکی | Sparse; sometimes comma-separated |
+| نام کالا، کد اچ اس کالا | Item-level |
+| تعداد بسته، وزن خالص، وزن ناخالص | Item-level |
+| بیمه، کرایه | Usually constant; rare row noise |
+| نوع بسته | Item-level (can differ) |
+| شماره ثبت سفارش | Almost always empty |
+
+**Not present in File 2:** حقوق استنباطی، وضعیت کالا، تاریخ اعلام، تاریخ خروج، letter fields. **CONFIRMED**
+
+---
+
+## 4. File 3 Structure
+
+**File:** `نمونه خروجی از اتوماسیون.xls`  
+**Sheet:** `List` — 86 rows, 29 columns  
+**Status:** **CONFIRMED**
+
+| Business concept | Actual column | Fill rate |
+|------------------|---------------|-----------|
+| Letter system ID | `شناسه نامه` | 86/86 |
+| Letter number (inbound) | `شماره نامه وارده` | **0/86 empty** |
+| Letter date (inbound) | `تاریخ نامه وارده` | **0/86 empty** |
+| Registration number (usable letter no.) | `شماره ثبت` | 77/86 — e.g. `1405/175136` |
+| Prep datetime | `تاریخ تهیه` | 86/86 |
+| Registration datetime | `تاریخ ثبت` | 77/86 |
+| Description | `توضیحات` | 86/86 — only Kootaj reference |
+| Subject / Summary | `موضوع` / `خلاصه` | empty |
+
+User rule stands: do not parse letter number/date from Description. In **this sample**, the populated dedicated fields are `شماره ثبت` + `تاریخ تهیه`/`تاریخ ثبت`, not the `وارده` columns. **CONFIRMED**
+
+---
+
+## 5. Kootaj Identification
+
+### File 1 — **CONFIRMED**
+- Column: `شماره کوتاژ`
+- Format: mostly Excel number; some Latin digit text; lengths 5–6
+- Master sheet: **624 rows → 598 unique Kootajs**; **15 Kootajs with multiple item rows**
+- Cause of repeats: different `کد تعرفه` + `شرح کالا` + `وزن` (same قبض، same values/rights)
+- Example: Kootaj `202770` → 8 item rows, one قبض `526327`, rial `5,278,362,660` repeated on every row
+
+### File 2 — **CONFIRMED**
+- No `شماره کوتاژ` header
+- Use **`شماره مجوز بارگیری`** as Kootaj key for this export shape
+- 607 rows → **576 unique** keys; **19 multi-item groups**
+- Overlap with File 1: **526** existing; **50** new candidates
+- Example new: `208856`, `210346` (also referenced in File 3)
+
+### File 3 — **CONFIRMED**
+- No Kootaj column
+- Extract from `توضیحات` only
+- Pattern 100% of rows: `اظهارنامه متروکه به شماره کوتاژ {digits}`
+- 86 rows → 77 unique Kootajs; 75 in File 1; 2 only after File 2 (`208856`, `210346`)
+
+**Parent key = Kootaj.** Row/item multiplicity must not create multiple parents. **CONFIRMED**
+
+---
+
+## 6. Kootaj-Level vs Detail-Level Data
+
+### File 1 — **CONFIRMED**
+
+| Level | Fields |
+|-------|--------|
+| Kootaj | شماره کوتاژ، تاریخ کوتاژ، ارزش ریالی، ارزش ارزی، حقوق استنباطی، واریزی، وضعیت، اعلام، خروج، محل ارزیابی، مرحله |
+| Warehouse receipt | شماره قبض انبار (1 per Kootaj in this sample) |
+| Item/row | کد تعرفه، شرح کالا، وزن ناخالص |
+| Not a stable business key | ردیف |
+
+### File 2 — **CONFIRMED**
+
+| Level | Fields |
+|-------|--------|
+| Kootaj | مجوز بارگیری، زمان کوتاژ، parties، currency/rate، ارزش‌ها، countries (mostly)، ثبت سفارش |
+| Receipt | قبض انبار، قبض الکترونیکی |
+| Item | نام کالا، کد HS، تعداد بسته، وزن خالص/ناخالص، نوع بسته، کشور سازنده (sometimes) |
+
+**Representation:** one Kootaj parent → one (or more) receipts → N item children. Do not flatten multi-item Kootajs into multiple parents.
+
+---
+
+## 7. File 2 Aggregation Rules
+
+Derived from multi-row groups (e.g. 128710×4, 202770×8). **Do not invent; measured from data.**
+
+| Field | Level | If multiple rows | Rule | Confidence |
+|-------|-------|------------------|------|------------|
+| شماره مجوز بارگیری | Kootaj key | Same | Use as Kootaj id | **CONFIRMED** |
+| زمان کوتاژ | Kootaj | Same | FIRST | **CONFIRMED** |
+| ارزش ریالی اظهارنامه | Kootaj total | Identical on every row | **FIRST / ANY — never SUM** | **CONFIRMED** |
+| ارزش ارزی اظهارنامه | Kootaj total | Identical on every row | **FIRST / ANY — never SUM** | **CONFIRMED** |
+| نرخ ارز / نوع ارز | Kootaj | Same | FIRST | **CONFIRMED** |
+| نام/کدینگ صاحب/کارگزار/اظهارکننده | Kootaj | Same | FIRST | **CONFIRMED** |
+| شماره قبض انبار | Receipt | Same in sample | FIRST → receipt entity | **CONFIRMED** |
+| وزن ناخالص | Item | Differs | **Keep detail; parent total = SUM(details)** | **CONFIRMED** |
+| وزن خالص | Item | Differs | Same as weight | **CONFIRMED** |
+| تعداد بسته | Item | Usually differs | **Keep detail; may SUM for total packages** | **CONFIRMED** |
+| نام کالا | Item | Differs | Keep detail | **CONFIRMED** |
+| کد اچ اس کالا | Item | Differs | Keep detail | **CONFIRMED** |
+| نوع بسته | Item | Can differ | Keep detail | **CONFIRMED** |
+| کشور سازنده | Item (often) | Can differ | Keep detail | **CONFIRMED** |
+| بیمه / کرایه | Unclear | Almost always same; rare noise | FIRST; do not SUM | **PROBABLE** |
+| حقوق استنباطی | — | Absent in File 2 | N/A | **CONFIRMED** |
+
+**Anti-pattern:** summing ارزش ریالی/ارزی across item rows multiplies the declaration total by item count (e.g. 4× for 128710).
+
+One anomaly group (`زمان` collision `1403/3/20 21:1:13` vs `21:11:3`) looks like datetime formatting / distinct declarations — treat conflicting parent fields as validation errors, not silent merge. **PROBABLE**
+
+---
+
+## 8. New Kootaj Import Logic
+
+```
+FUNCTION import_file2(rows):
+  NORMALIZE each row
+  GROUP rows BY normalize(شماره مجوز بارگیری)   # effective Kootaj
+
+  FOR EACH group IN groups:
+    kootaj_id = group.key
+
+    IF kootaj_id exists in master_database:
+      SKIP   # no insert, no update, no overwrite
+      CONTINUE
+
+    ELSE:
+      parent = extract_kootaj_level_fields(group)
+        # FIRST of: زمان کوتاژ, parties, currency, rate,
+        # ارزش ریالی, ارزش ارزی, countries (stable ones), ثبت سفارش
+        # ارزش* = FIRST/ANY, never SUM
+
+      receipts = distinct warehouse receipts in group
+      items = each row as item detail
+        # نام کالا, HS, weights, تعداد بسته, نوع بسته, کشور سازنده
+        # link to receipt
+
+      INSERT kootaj parent
+      INSERT receipts
+      INSERT items
+
+      # Do NOT invent حقوق استنباطی / وضعیت / letter from File 2
+```
+
+**CONFIRMED** against business rules + measured keys.
+
+Expected on this sample: skip ~526, insert ~50 new.
+
+---
+
+## 9. File 3 Letter Processing
+
+```
+FOR EACH automation row:
+  letter_system_id = شناسه نامه
+  letter_number    = شماره ثبت          # populated 77/86; وارده empty in sample
+  letter_date      = تاریخ ثبت if present else تاریخ تهیه
+  description      = توضیحات
+  kootaj_id        = extract_kootaj(description)
+
+  IF kootaj_id is null:
+    → Unmatched queue (extraction failed)
+
+  ELSE IF kootaj not in database:
+    → Unmatched queue   # DO NOT auto-create Kootaj
+
+  ELSE IF kootaj already has letter:
+    → Conflict queue (business: max one letter)
+
+  ELSE:
+    Attach letter fields to Kootaj
+```
+
+**Multiple File 3 rows per Kootaj (6 Kootajs, e.g. 202062×3):**  
+In every multi case, **exactly one row has `شماره ثبت`**. **PROBABLE** rule: prefer the row with non-empty `شماره ثبت`; ignore draft rows without it; if still >1, conflict queue.
+
+---
+
+## 10. Kootaj Extraction From Description
+
+**Deterministic:** **CONFIRMED** (86/86 labeled extract; 0 failures in sample)
+
+**Sole observed pattern:**
+```text
+اظهارنامه متروکه به شماره کوتاژ <digits>
+```
+
+**Primary regex:**
+```regex
+شماره\s*کوتاژ\s*[:：]?\s*([0-9۰-۹٠-٩]{4,10})
+```
+Then normalize digits.
+
+**Fallback (only if labeled pattern missing):** **PROBABLE** / unused in this sample  
+`کوتاژ\s*[:：]?\s*([0-9۰-۹٠-٩]{4,10})`
+
+**Do not use** bare 5–7 digit standalone matching (false positives).
+
+**Edge cases:** empty description; multiple Kootaj mentions; format drift; unmatched Kootaj (create queue, not parent). In sample: empty=0, multi-candidate=0, unmatched vs File1-only=2 (exist in File 2).
+
+---
+
+## 11. Data Normalization Rules
+
+| Rule | Detail | Confidence |
+|------|--------|------------|
+| Persian digits ۰-۹ → 0-9 | Apply before match | **CONFIRMED** (needed; none in current Kootaj cols) |
+| Arabic-Indic ٠-٩ → 0-9 | Same | **CONFIRMED** (defensive) |
+| Trim whitespace | Always | **CONFIRMED** |
+| Strip non-digits for Kootaj compare | After digit fold | **CONFIRMED** |
+| Strip leading zeros | `012345` → `12345` | **CONFIRMED** |
+| Excel numeric | `Math.trunc` / integer string | **CONFIRMED** (File1 mostly numeric) |
+| Comma thousands | Remove before parse (`5,278,362,660`) | **CONFIRMED** |
+| Warehouse IDs | Alphanumeric possible (`106502A`, `147371E`); normalize carefully — not pure int | **CONFIRMED** |
+| Datetime | Normalize Shamsi `y/m/d h:m:s` with zero-padding for compare | **CONFIRMED** |
+| Letter `شماره ثبت` | Strip invisible chars; keep `year/number` shape | **CONFIRMED** |
+| Arabic ي/ك vs Persian ی/ک | Normalize in descriptive text if matching descriptions | **PROBABLE** |
+
+Goal: `123456` / `۱۲۳۴۵۶` / numeric `123456` → same Kootaj. **CONFIRMED** as requirement; implementable deterministically.
+
+---
+
+## 12. Recommended Data Model
+
+Conceptual only (no SQL).
+
+```
+Kootaj  (1)
+├── WarehouseReceipt (1..N)     # N=1 in current samples
+│     └── ItemRow (1..N)
+└── Letter (0..1)
+```
+
+### Kootaj
+`kootaj_number` (PK, normalized)  
+`kootaj_datetime`  
+`currency_type`, `exchange_rate`  
+`value_rial` (declaration total)  
+`value_foreign` (declaration total)  
+`inferred_duties` (حقوق استنباطی — File1; nullable for File2-only)  
+`amval_deposit` (واریزی)  
+`goods_status`, `announce_to_amval_raw`, `exit_from_customs_raw`  
+`evaluation_place`, `declaration_stage`  
+`owner_name`, `owner_code`, `broker_*`, `declarant_*`  
+`origin_country`, `export_country`, `trade_country`  
+`order_registration_no`  
+`source` (`file1` / `file2`)  
+`letter_number`, `letter_date`, `letter_system_id`, `letter_description` (nullable; 0..1)
+
+**Recommendation:** store letter as **fields on Kootaj** (not a separate multi-row table), because cardinality is 0..1 and File 3 description is formulaic. Optional separate `Letter` table only if audit of automation drafts is required. **PROBABLE** (simple fields fit the data)
+
+### WarehouseReceipt
+`kootaj_number` (FK)  
+`warehouse_receipt_no`  
+`electronic_warehouse_receipt_no` (nullable; may be list)
+
+### ItemRow
+`kootaj_number` (FK)  
+`warehouse_receipt_no` (FK)  
+`hs_code` / `tariff_code`  
+`goods_description`  
+`gross_weight`, `net_weight`  
+`package_count`  
+`package_type`  
+`manufacturer_country`  
+`source_row_fingerprint` (for idempotent re-import)
+
+---
+
+## 13. Complete Deterministic Processing Pipeline
+
+### A. Initial Import (File 1)
+```
+File 1 → read sheet «متروکه کلی» only
+→ normalize Kootaj / numbers / dates
+→ group by Kootaj
+→ INSERT Kootaj parent (FIRST of repeated totals/rights/status)
+→ INSERT receipt(s)
+→ INSERT item rows (tariff, description, weight)
+→ do not create letters
+```
+
+### B. New Data Import (File 2)
+```
+File 2 → normalize
+→ group by normalize(شماره مجوز بارگیری)
+→ IF exists → SKIP (insert-only)
+→ IF new → CREATE parent + receipts + items
+→ never overwrite master fields
+```
+
+### C. Automation Import (File 3)
+```
+File 3 → read شناسه نامه / شماره ثبت / تاریخ‌ها / توضیحات
+→ extract Kootaj from توضیحات (regex)
+→ find Kootaj
+→ IF not found → Unmatched queue
+→ prefer row with شماره ثبت when duplicates exist
+→ IF found and no letter → attach letter fields
+→ IF found and letter exists → Conflict queue
+```
+
+**Order matters:** run File 2 before File 3 so new Kootajs like `208856` / `210346` can receive letters. **CONFIRMED** by cross-file evidence.
+
+---
+
+## 14. Validation / Error Handling
+
+| Case | Action |
+|------|--------|
+| Duplicate Kootaj on File 2 insert | Skip (expected) |
+| File 2 group with conflicting parent totals | Quarantine group; do not insert | 
+| Missing/invalid Kootaj key | Reject row → error queue |
+| File 3 extraction failure | Unmatched queue |
+| File 3 Kootaj not in DB | Unmatched queue (no auto-create) |
+| File 3 multiple letters with `شماره ثبت` | Conflict queue |
+| Warehouse ID non-numeric | Store as text |
+| Re-import File 1 | Idempotent by Kootaj (+ item fingerprint) |
+| Partition sheets of File 1 | Do not double-import |
+
+---
+
+## 15. AI vs Non-AI Assessment
+
+| Step | AI needed? |
+|------|------------|
+| Excel read | No — deterministic |
+| Normalization | No |
+| Kootaj match / duplicate detect | No |
+| Grouping / aggregation | No — rules above |
+| Letter number/date read | No — column read |
+| Kootaj from Description | No — regex (format stable in sample) |
+| Insert/skip/attach logic | No |
+
+**No AI required** for this pipeline as specified.  
+If Description formats diversify later, extend regex/rules first; AI only if free-text becomes non-patterned. **CONFIRMED** for current files.
+
+---
+
+## 16. Remaining Ambiguities
+
+| Topic | Status | Notes |
+|-------|--------|-------|
+| File 2 Kootaj column name | **CONFIRMED** as `شماره مجوز بارگیری` in this export | Confirm with business that all future سامانه exports use this equivalence |
+| Multiple قبض per Kootaj | **UNKNOWN** in practice | Allowed by business; **0 examples** in these files |
+| True goods quantity (تعداد کالا) | **UNKNOWN** | File 2 has `تعداد بسته` only; File 1 has no qty |
+| File 3 official “letter number” | **PROBABLE** = `شماره ثبت` | `شماره نامه وارده` empty; confirm with users |
+| File 3 official “letter date” | **PROBABLE** = `تاریخ ثبت` else `تاریخ تهیه` | |
+| Which automation row is “the” letter | **PROBABLE** | Prefer non-empty `شماره ثبت` |
+| Announce/exit free-text parsing | **UNKNOWN** | Store raw; structured parse is optional later |
+| بیمه/کرایه semantics | **UNKNOWN** | Near-constant; treat as non-summed |
+| Owner رايمون row (مجوز 34596) | **PROBABLE** valid new/non-abandoned declaration in سامانه dump | Still follows insert-if-new unless business filters اموال تملیکی only |
+
+---
+
+## 17. Recommended Next Development Step
+
+1. **Freeze this spec** with business sign-off on three points:
+   - File 2 key = `شماره مجوز بارگیری`
+   - File 3 letter number = `شماره ثبت` (not `وارده`)
+   - Letter date = `تاریخ ثبت` / fallback `تاریخ تهیه`
+2. Implement a **read-only validator** (no DB writes): normalize → group → report skip/insert/unmatched counts on these three files.
+3. Only then: schema + importers in the order File1 → File2 → File3.
+
+---
+
+### Bottom line
+
+Kootaj is the parent; File 1/2 multi-rows are item details with **repeated declaration totals** (never sum value/duties); File 2 is insert-only using **`شماره مجوز بارگیری`** as Kootaj; File 3 attaches at most one letter via regex on Description plus dedicated `شماره ثبت`/`تاریخ` fields; the whole path is **deterministic without AI**.

@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+:root {
+  --bg: #f3efe6;
+  --bg-elevated: #faf7f0;
+  --ink: #1c2a22;
+  --ink-muted: #5a6b60;
+  --line: #d5cfc0;
+  --accent: #3d5c45;
+  --accent-soft: #e4ece6;
+  --warn: #8a5a2b;
+  --danger: #8b3a3a;
+  --ok: #2f6b4f;
+}
+
+@theme {
+  --font-sans: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif;
+  --color-surface: var(--bg);
+  --color-elevated: var(--bg-elevated);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(61, 92, 69, 0.08), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(138, 90, 43, 0.06), transparent 50%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}

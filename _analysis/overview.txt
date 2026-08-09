@@ -1,0 +1,76 @@
+﻿sheet_count=3
+====SHEET====
+name=متروکه کلی
+index=1
+usedRows=625
+usedCols=16
+usedStart=1,1
+HEADER|1|ردیف
+HEADER|2|شماره کوتاژ
+HEADER|3|تاریخ کوتاژ
+HEADER|4|کد تعرفه
+HEADER|5|شرح کالا
+HEADER|6|وزن ناخالص
+HEADER|7|ارزش ریالی کالا
+HEADER|8|ارزش ارزی اظهارنامه
+HEADER|9|شماره قبض انبار
+HEADER|10|محل ارزیابی
+HEADER|11|مرحله اظهارنامه
+HEADER|12|حقوق استنباطی گمرک
+HEADER|13|واریزی اموال تملیکی
+HEADER|14|وضعیت کالا
+HEADER|15|تاریخ اعلام به اموال تملیکی
+HEADER|16|تاریخ خروج کالا  از گمرک توسط اموال تملیکی
+tsv=D:\نرم افزار متروکه\_analysis\sheet_1_data.tsv
+dupGroups=0
+dupExtraRows=0
+====SHEET====
+name=متروکه خارج شده
+index=2
+usedRows=281
+usedCols=16
+usedStart=1,1
+HEADER|1|ردیف
+HEADER|2|شماره کوتاژ
+HEADER|3|تاریخ کوتاژ
+HEADER|4|کد تعرفه
+HEADER|5|شرح کالا
+HEADER|6|وزن ناخالص
+HEADER|7|ارزش ریالی کالا
+HEADER|8|ارزش ارزی اظهارنامه
+HEADER|9|شماره قبض انبار
+HEADER|10|محل ارزیابی
+HEADER|11|مرحله اظهارنامه
+HEADER|12|حقوق استنباطی گمرک
+HEADER|13|واریزی اموال تملیکی
+HEADER|14|وضعیت کالا
+HEADER|15|تاریخ اعلام به اموال تملیکی
+HEADER|16|تاریخ خروج کالا  از گمرک توسط اموال تملیکی
+tsv=D:\نرم افزار متروکه\_analysis\sheet_2_data.tsv
+dupGroups=0
+dupExtraRows=0
+====SHEET====
+name=متروکه خارج نشده
+index=3
+usedRows=250
+usedCols=16
+usedStart=1,1
+HEADER|1|ردیف
+HEADER|2|شماره کوتاژ
+HEADER|3|تاریخ کوتاژ
+HEADER|4|کد تعرفه
+HEADER|5|شرح کالا
+HEADER|6|وزن ناخالص
+HEADER|7|ارزش ریالی کالا
+HEADER|8|ارزش ارزی اظهارنامه
+HEADER|9|شماره قبض انبار
+HEADER|10|محل ارزیابی
+HEADER|11|مرحله اظهارنامه
+HEADER|12|حقوق استنباطی گمرک
+HEADER|13|واریزی اموال تملیکی
+HEADER|14|وضعیت کالا
+HEADER|15|تاریخ اعلام به اموال تملیکی
+HEADER|16|تاریخ خروج کالا  از گمرک توسط اموال تملیکی
+tsv=D:\نرم افزار متروکه\_analysis\sheet_3_data.tsv
+dupGroups=0
+dupExtraRows=0

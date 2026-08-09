@@ -1,0 +1,249 @@
+﻿COUNTS sheet1=624 sheet2=280 sheet3=249 sum23=529
+KEY|S1:شماره کوتاژ|totalRows=624|uniqueKeys=598|dupKeyCount=15|rowsInDupKeys=41|maxDup=8|uniqueRate=95.83%
+  DUP|202770 => 8
+  DUP|128710 => 4
+  DUP|202358 => 4
+  DUP|202944 => 3
+  DUP|202746 => 2
+  DUP|83391 => 2
+  DUP|202632 => 2
+  DUP|202725 => 2
+KEY|S1:شماره قبض انبار|totalRows=624|uniqueKeys=590|dupKeyCount=19|rowsInDupKeys=53|maxDup=8|uniqueRate=94.55%
+  DUP|526327 => 8
+  DUP|136405 => 6
+  DUP|541282 => 4
+  DUP|144381 => 4
+  DUP|509216 => 3
+  DUP|199050 => 2
+  DUP|135752 => 2
+  DUP|542249 => 2
+KEY|S1:شماره کوتاژ+کد تعرفه|totalRows=624|uniqueKeys=623|dupKeyCount=1|rowsInDupKeys=2|maxDup=2|uniqueRate=99.84%
+  DUP|203782||87071010 => 2
+KEY|S1:شماره کوتاژ+شماره قبض انبار|totalRows=624|uniqueKeys=598|dupKeyCount=15|rowsInDupKeys=41|maxDup=8|uniqueRate=95.83%
+  DUP|202770||526327 => 8
+  DUP|128710||144381 => 4
+  DUP|202358||541282 => 4
+  DUP|202944||509216 => 3
+  DUP|128299||199050 => 2
+  DUP|202641||524979 => 2
+  DUP|202725||517339 => 2
+  DUP|202632||542249 => 2
+KEY|S1:شماره کوتاژ+کد تعرفه+شرح کالا|totalRows=624|uniqueKeys=624|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S1:شماره کوتاژ+کد تعرفه+وزن ناخالص|totalRows=624|uniqueKeys=623|dupKeyCount=1|rowsInDupKeys=2|maxDup=2|uniqueRate=99.84%
+  DUP|203782||87071010||500 => 2
+KEY|S1:شماره کوتاژ+کد تعرفه+ارزش ریالی کالا|totalRows=624|uniqueKeys=623|dupKeyCount=1|rowsInDupKeys=2|maxDup=2|uniqueRate=99.84%
+  DUP|203782||87071010||5,455,672,000 => 2
+KEY|S1:شماره کوتاژ+تاریخ کوتاژ|totalRows=624|uniqueKeys=598|dupKeyCount=15|rowsInDupKeys=41|maxDup=8|uniqueRate=95.83%
+  DUP|202770||1404/10/16 11:17:33 => 8
+  DUP|128710||1401/2/5 10:27:47 => 4
+  DUP|202358||1404/9/19 14:9:33 => 4
+  DUP|202944||1404/9/29 13:30:36 => 3
+  DUP|128734||1401/2/9 14:16:19 => 2
+  DUP|202641||1404/10/17 8:51:56 => 2
+  DUP|202725||1404/10/28 14:13:17 => 2
+  DUP|83391||1398/6/7 9:49:21 => 2
+KEY|S1:شماره کوتاژ+کد تعرفه+شماره قبض انبار|totalRows=624|uniqueKeys=623|dupKeyCount=1|rowsInDupKeys=2|maxDup=2|uniqueRate=99.84%
+  DUP|203782||87071010||132558 => 2
+KEY|S1:شماره کوتاژ+کد تعرفه+شرح کالا+وزن ناخالص+ارزش ریالی کالا|totalRows=624|uniqueKeys=624|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S1:شماره قبض انبار+کد تعرفه|totalRows=624|uniqueKeys=616|dupKeyCount=4|rowsInDupKeys=12|maxDup=6|uniqueRate=98.72%
+  DUP|136405||87042290 => 6
+  DUP|114517||85423100 => 2
+  DUP|131269||68138100 => 2
+  DUP|132558||87071010 => 2
+KEY|S1:شماره قبض انبار+کد تعرفه+شرح کالا|totalRows=624|uniqueKeys=619|dupKeyCount=1|rowsInDupKeys=6|maxDup=6|uniqueRate=99.2%
+  DUP|136405||87042290||ساعت مچی => 6
+KEY|S1:تاریخ اعلام به اموال تملیکی|totalRows=624|uniqueKeys=268|dupKeyCount=32|rowsInDupKeys=388|maxDup=95|uniqueRate=42.95%
+  DUP| => 95
+  DUP|1401/175788 => 70
+  DUP|1401/1733281 => 35
+  DUP|99/1216700 => 32
+  DUP|99/2/30-99/198442 => 21
+  DUP|1401/273632 => 18
+  DUP|98/8/9-98/1028392 => 13
+  DUP|98/1028392 => 12
+KEY|S1:تاریخ خروج کالا  از گمرک توسط اموال تملیکی|totalRows=624|uniqueKeys=6|dupKeyCount=6|rowsInDupKeys=624|maxDup=344|uniqueRate=0.96%
+  DUP|کالا از گمرک خارج نشده است => 344
+  DUP|1402/02139652-1402/05/03 => 107
+  DUP|1402/2135536-1402/03/20 => 63
+  DUP|1404/1402541 - 1404/09/22 => 42
+  DUP|1404/03/18 - 04135787 => 34
+  DUP|1400/1572777-1400/11/16 => 34
+KEY|S2:شماره کوتاژ|totalRows=280|uniqueKeys=277|dupKeyCount=3|rowsInDupKeys=6|maxDup=2|uniqueRate=98.93%
+  DUP|128734 => 2
+  DUP|143337 => 2
+  DUP|83391 => 2
+KEY|S2:شماره قبض انبار|totalRows=280|uniqueKeys=277|dupKeyCount=3|rowsInDupKeys=6|maxDup=2|uniqueRate=98.93%
+  DUP|201856 => 2
+  DUP|176905 => 2
+  DUP|176074 => 2
+KEY|S2:شماره کوتاژ+کد تعرفه|totalRows=280|uniqueKeys=280|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S2:شماره کوتاژ+شماره قبض انبار|totalRows=280|uniqueKeys=277|dupKeyCount=3|rowsInDupKeys=6|maxDup=2|uniqueRate=98.93%
+  DUP|143337||201856 => 2
+  DUP|83391||176905 => 2
+  DUP|128734||176074 => 2
+KEY|S2:شماره کوتاژ+کد تعرفه+شماره قبض انبار|totalRows=280|uniqueKeys=280|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S2:شماره کوتاژ+کد تعرفه+شرح کالا+وزن ناخالص+ارزش ریالی کالا|totalRows=280|uniqueKeys=280|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S3:شماره کوتاژ|totalRows=249|uniqueKeys=245|dupKeyCount=2|rowsInDupKeys=6|maxDup=4|uniqueRate=98.39%
+  DUP|128710 => 4
+  DUP|128299 => 2
+KEY|S3:شماره قبض انبار|totalRows=249|uniqueKeys=238|dupKeyCount=5|rowsInDupKeys=16|maxDup=6|uniqueRate=95.58%
+  DUP|136405 => 6
+  DUP|144381 => 4
+  DUP|114517 => 2
+  DUP|131269 => 2
+  DUP|199050 => 2
+KEY|S3:شماره کوتاژ+کد تعرفه|totalRows=249|uniqueKeys=249|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S3:شماره کوتاژ+شماره قبض انبار|totalRows=249|uniqueKeys=245|dupKeyCount=2|rowsInDupKeys=6|maxDup=4|uniqueRate=98.39%
+  DUP|128710||144381 => 4
+  DUP|128299||199050 => 2
+KEY|S3:شماره کوتاژ+کد تعرفه+شماره قبض انبار|totalRows=249|uniqueKeys=249|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+KEY|S3:شماره کوتاژ+کد تعرفه+شرح کالا+وزن ناخالص+ارزش ریالی کالا|totalRows=249|uniqueKeys=249|dupKeyCount=0|rowsInDupKeys=0|maxDup=0|uniqueRate=100%
+CROSS|composite=cotage+tariff+desc+weight+rial+warehouse
+CROSS|uniqueKeys S1=624 S2=280 S3=249
+CROSS|in2_not_in1=0 in3_not_in1=0 in1_not_in2or3=95 overlap_2and3=0
+CROSS|examples only in S1:
+  ONLY1|203752||87089419||جعبه فرمان کامل خودرو||10||272,783,600||503611
+  ONLY1|202725||84833000||یاتاقان خودرو||160||9,206,446,500||517339
+  ONLY1|202875||84148020||توربو فن||10||545,567,200||513114
+  ONLY1|202770||90328940||کامپیوتر خودرو با سریال *69017938*||5||5,278,362,660||526327
+  ONLY1|202274||87081010||قطعات پلاستیکی خودرو||5||136,391,800||531225
+  ONLY1|202527||85167100||اسپرسوساز||3||204,587,700||528834
+  ONLY1|202770||87089110||رادیاتور خودرو||10||5,278,362,660||526327
+  ONLY1|202355||87088011||کمک فنر خودروی سواری||10||3,477,990,900||528397
+  ONLY1|202467||87082910||درب صندوق عقب خودرو سواری||10||204,587,700||521658
+  ONLY1|202358||87084010||گیربکس خودرو||120||5,933,725,259||541282
+  ONLY1|202680||33059010||پک رنگ مو||5||681,959||524225
+  ONLY1|202632||87084010||گیربکس خودرو||50||4,432,733,500||542249
+  ONLY1|202373||94038900||میز||10||102,293,850||536128
+  ONLY1|202125||56041000||طناب پلاستیکی||40||109,113,440||241612
+  ONLY1|202746||87082290||قطعات پلاستیکی اطاق خودرو سواری||20||954,742,600||521804
+STATUS_EXIT_MATRIX_S1
+  خارج نشده || NOT_EXITED_TEXT => 344
+  در انتظار پرداخت || HAS_EXIT_CODE_OR_DATE => 238
+  خارج نشده || HAS_EXIT_CODE_OR_DATE => 42
+ANNOUNCE_PATTERNS_S1
+  PAT|excelSerialLike=0
+  PAT|dateDashNumber=267
+  PAT|shamsiDateTime=0
+  PAT|pureNumber=20
+  PAT|other=3
+  PAT|yearSlashNumber=239
+  PAT|empty=95
+  OTHER_SAMPLE|1216700/99
+  OTHER_SAMPLE|1402.1200269
+EXIT_PATTERNS_S1
+  EXIT|کالا از گمرک خارج نشده است => 344
+  EXIT|1402/02139652-1402/05/03 => 107
+  EXIT|1402/2135536-1402/03/20 => 63
+  EXIT|1404/1402541 - 1404/09/22 => 42
+  EXIT|1404/03/18 - 04135787 => 34
+  EXIT|1400/1572777-1400/11/16 => 34
+COTAGE_MULTIROW_EXAMPLES_S1
+COTAGE_multiCount=10 shown_top10
+COTAGE_totalMultiGroups=15
+COTAGE|202770 count=8
+  ROW tariff=87071010 desc=درب خودرو سواری wh=526327 weight=100 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=84073490 desc=موتور 4 سیلندر خودرو بنزینی با سریال 2AR U206056 wh=526327 weight=120 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87141015 desc=اگزوز خودرو سواری wh=526327 weight=20 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87089110 desc=رادیاتور خودرو wh=526327 weight=10 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87089421 desc=اکسل خودرو با توپی چرخ wh=526327 weight=85 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=90328940 desc=کامپیوتر خودرو با سریال *69017938* wh=526327 weight=5 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=84099190 desc=رام خودرو wh=526327 weight=40 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=85443020 desc=سیمهای مختلف رابط خودرو wh=526327 weight=20 rial=5,278,362,660 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|128710 count=4
+  ROW tariff=85113090 desc=کویل wh=144381 weight=824 rial=22936452000 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=85113030 desc=توزیع کننده برق دلکو wh=144381 weight=78 rial=22936452000 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=90328990 desc=کامپيوتر مرکزي ECU  CAMPUTER wh=144381 weight=2964 rial=22936452000 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=73251000 desc=هولدر wh=144381 weight=160 rial=22936452000 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|202358 count=4
+  ROW tariff=84073490 desc=موتور کامل 6 سیلندر خودرو wh=541282 weight=250 rial=5,933,725,259 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87084010 desc=گیربکس خودرو wh=541282 weight=120 rial=5,933,725,259 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=70072120 desc=شیشه جلوی خودرو wh=541282 weight=30 rial=5,933,725,259 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87071010 desc=عایق زیر کاپوت خودرو wh=541282 weight=10 rial=5,933,725,259 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|202944 count=3
+  ROW tariff=85284900 desc=نمایشگرسامسونگ مدل pm43 h wh=509216 weight=10 rial=1,295,722,100 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=83062990 desc=دکوری wh=509216 weight=35 rial=1,295,722,100 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=94038900 desc=مصنوعات چوبی wh=509216 weight=200 rial=1,295,722,100 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|202746 count=2
+  ROW tariff=87071010 desc=درب خودرو سواری wh=521804 weight=60 rial=954,742,600 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87082290 desc=قطعات پلاستیکی اطاق خودرو سواری wh=521804 weight=20 rial=954,742,600 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|83391 count=2
+  ROW tariff=82075090 desc=مته دریل wh=176905 weight=51 rial=32424000 status=در انتظار پرداخت exit=1400/1572777-1400/11/16
+  ROW tariff=34011110 desc=صابون حمام wh=176905 weight=20 rial=32424000 status=در انتظار پرداخت exit=1400/1572777-1400/11/16
+COTAGE|202632 count=2
+  ROW tariff=84073490 desc=موتور  خودرو 4 سیلندر wh=542249 weight=150 rial=4,432,733,500 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87084010 desc=گیربکس خودرو wh=542249 weight=50 rial=4,432,733,500 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|202725 count=2
+  ROW tariff=87088019 desc=کمک فنر خودرو سواری wh=517339 weight=60 rial=9,206,446,500 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=84833000 desc=یاتاقان خودرو wh=517339 weight=160 rial=9,206,446,500 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|202355 count=2
+  ROW tariff=84073490 desc=موتور کامل 4 سیلندر خودرو wh=528397 weight=250 rial=3,477,990,900 status=خارج نشده exit=کالا از گمرک خارج نشده است
+  ROW tariff=87088011 desc=کمک فنر خودروی سواری wh=528397 weight=10 rial=3,477,990,900 status=خارج نشده exit=کالا از گمرک خارج نشده است
+COTAGE|128734 count=2
+  ROW tariff=82075090 desc=مته دریل به مارک HSS wh=176074 weight=19 rial=15246000 status=در انتظار پرداخت exit=1402/2135536-1402/03/20
+  ROW tariff=34011110 desc=صابون wh=176074 weight=10 rial=15246000 status=در انتظار پرداخت exit=1402/2135536-1402/03/20
+WAREHOUSE_MULTI_S1
+WAREHOUSE_totalMultiGroups=19
+WH|526327 count=8
+  cotage=202770 tariff=87071010 desc=درب خودرو سواری
+  cotage=202770 tariff=84073490 desc=موتور 4 سیلندر خودرو بنزینی با سریال 2AR U206056
+  cotage=202770 tariff=87141015 desc=اگزوز خودرو سواری
+  cotage=202770 tariff=87089110 desc=رادیاتور خودرو
+  cotage=202770 tariff=87089421 desc=اکسل خودرو با توپی چرخ
+  cotage=202770 tariff=90328940 desc=کامپیوتر خودرو با سریال *69017938*
+  cotage=202770 tariff=84099190 desc=رام خودرو
+  cotage=202770 tariff=85443020 desc=سیمهای مختلف رابط خودرو
+WH|136405 count=6
+  cotage=167110 tariff=87042290 desc=ساعت مچی
+  cotage=181252 tariff=87042290 desc=ساعت مچی
+  cotage=181264 tariff=87042290 desc=ساعت مچی
+  cotage=181270 tariff=87042290 desc=ساعت مچی
+  cotage=181285 tariff=87042290 desc=ساعت مچی
+  cotage=181291 tariff=87042290 desc=ساعت مچی
+WH|541282 count=4
+  cotage=202358 tariff=84073490 desc=موتور کامل 6 سیلندر خودرو
+  cotage=202358 tariff=87084010 desc=گیربکس خودرو
+  cotage=202358 tariff=70072120 desc=شیشه جلوی خودرو
+  cotage=202358 tariff=87071010 desc=عایق زیر کاپوت خودرو
+WH|144381 count=4
+  cotage=128710 tariff=85113090 desc=کویل
+  cotage=128710 tariff=85113030 desc=توزیع کننده برق دلکو
+  cotage=128710 tariff=90328990 desc=کامپيوتر مرکزي ECU  CAMPUTER
+  cotage=128710 tariff=73251000 desc=هولدر
+WH|509216 count=3
+  cotage=202944 tariff=85284900 desc=نمایشگرسامسونگ مدل pm43 h
+  cotage=202944 tariff=83062990 desc=دکوری
+  cotage=202944 tariff=94038900 desc=مصنوعات چوبی
+EMPTY|announce=95 rights=95 both=95
+EMPTY_ANNOUNCE_SAMPLES
+  cotage=202062 date=1404/9/16 13:8:4 desc=موتور کامل 6 سیلندر خودرو status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202071 date=1404/9/16 13:17:1 desc=اتاق کامل خودرو status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202074 date=1404/9/16 13:21:12 desc=ماشین چمن زنی status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202080 date=1404/9/16 13:34:38 desc=میل لنگ کامیون status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202089 date=1404/9/16 13:46:1 desc=ویترین آلومینیومی status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202092 date=1404/9/16 13:48:45 desc=درب خودرو status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202110 date=1404/9/16 14:41:2 desc=زنجیر دوچرخه status=خارج نشده exit=کالا از گمرک خارج نشده است
+  cotage=202113 date=1404/9/16 14:45:20 desc=تلفن همراه status=خارج نشده exit=کالا از گمرک خارج نشده است
+DESC_NEAR_DUP_SAMPLES
+  SPACE_VAR|قطعات شاخه ای الکترونیک => 2 || قطعات شاخه ای  الکترونیک => 5
+  SPACE_VAR|مدارمجتمع => 1 || مدار مجتمع => 1
+  SPACE_VAR|گیربکس => 3 || گیر بکس => 2
+  SPACE_VAR|قطعات ریز الکترونیک => 3 || قطعات ریزالکترونیک => 1
+  SPACE_VAR|صفحه کلید ( کیبورد ) => 1 || صفحه کلید( کیبورد ) => 1
+  SPACE_VAR|موتور خودرو => 11 || موتورخودرو => 1
+  SPACE_VAR|دیود به مارک everlight => 1 || دیود به مارکeverlight => 3
+  SPACE_VAR|1 کارتن  محتوی 10 جعبه هر جعبه حاوی 20 عددلنزعینک => 1 || 1 کارتن  محتوی 10 جعبه هر جعبه حاوی 20 عدد لنزعینک => 2
+  SPACE_VAR|آی سی => 2 || آ ی سی => 1
+  SPACE_VAR|مته دریل -میخ پرچ => 1 || مته دریل-میخ پرچ => 4
+COTAGE_LEN_S1
+  len=5=76
+  len=6=548
+WAREHOUSE_LONG_OR_TEXT_S1
+  wh=106502A cotage=137255
+  wh=14010031177 cotage=164381
+  wh=147371E cotage=167617
+  wh=149693E cotage=167620
+  wh=185643E cotage=167699
+  wh=130059E cotage=167723
+  wh=1397080100139872/ cotage=177755
+  wh=1400005132 cotage=177758

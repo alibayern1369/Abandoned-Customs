@@ -1,0 +1,30 @@
+{
+  "name": "@metrookeh/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PostgreSQL schema, Drizzle ORM, migrations, and seeds for Metrookeh",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx src/migrate.ts",
+    "seed": "tsx src/seed.ts",
+    "studio": "drizzle-kit studio",
+    "test": "tsx --test tests/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.2",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "dotenv": "^16.5.0",
+    "drizzle-kit": "^0.31.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

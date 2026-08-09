@@ -1,0 +1,26 @@
+{
+  "name": "metrookeh",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Metrookeh customs abandoned-goods management system",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @metrookeh/web",
+    "build": "npm run build -w @metrookeh/web",
+    "start": "npm run start -w @metrookeh/web",
+    "test": "npm run test -w @metrookeh/validator && npm run test -w @metrookeh/import-core && npm run test -w @metrookeh/db",
+    "test:validator": "npm run test -w @metrookeh/validator",
+    "test:import-core": "npm run test -w @metrookeh/import-core",
+    "test:db": "npm run test -w @metrookeh/db",
+    "db:generate": "npm run generate -w @metrookeh/db",
+    "db:migrate": "npm run migrate -w @metrookeh/db",
+    "db:studio": "npm run studio -w @metrookeh/db",
+    "db:seed": "npm run seed -w @metrookeh/db"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

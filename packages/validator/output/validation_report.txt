@@ -1,0 +1,66 @@
+========================================================================
+METROOKEH READ-ONLY VALIDATION REPORT
+Generated: 2026-08-09T06:46:50.550Z
+Mode: READ-ONLY (source Excel files were not modified)
+========================================================================
+
+INPUT FILES
+  File 1: d:\Files\Amar\1405\متروکه آپدیت شده\متروکه گمرک کیش .xlsx
+  File 2: d:\Files\Amar\1405\متروکه آپدیت شده\نمونه خروجی از سامانه.xlsx
+  File 3: d:\Files\Amar\1405\متروکه آپدیت شده\نمونه خروجی از اتوماسیون.xls
+
+## FILE 1
+  Total physical rows:                      624
+  Unique Kootajs:                           598
+  Kootajs with multiple rows:               15
+  Kootajs with multiple warehouse receipts: 0
+  Master sheet:                             متروکه کلی
+
+## FILE 2
+  Total rows:                               607
+  Unique Kootajs:                           576
+  Existing Kootajs (unique, SKIPPED):       526
+  New Kootajs (unique):                     50
+  Existing rows (physical):                 554
+  New rows (physical):                      53
+  Duplicate extra rows (multi-item):        31
+  Groups with multiple rows:                19
+  Suspicious records:                       0
+
+## FILE 3
+  Total rows:                               86
+  Successfully extracted Kootajs (rows):    86
+  Failed Kootaj extraction:                 0
+  Unique extracted Kootajs:                 77
+  Rows with registration (شماره ثبت):       77
+  Matched rows:                             86
+  Unmatched rows:                           0
+  Matched Kootajs:                          77
+  Unmatched Kootajs:                        0
+  Kootajs with valid letters:               77
+  Kootajs with multiple letter candidates:  0
+  Conflicts:                                0
+  Kootajs with multiple automation rows:     6
+
+## KEY COUNTS
+  existing_kootajs (unique skip): 526
+  new_kootajs:                    50
+  unmatched_automation_rows:      0
+  conflicts:                      0
+
+## DISCREPANCIES VS PRIOR ANALYSIS EXPECTATIONS
+  None — results match the soft expectations from prior analysis.
+
+## EXAMPLES
+  NEW Kootaj example:
+    kootaj=34596 rows=1
+    owner=توليدي بازرگاني رايمون پويش شرق
+    goods=موتور دیزل شناور دریایی
+  SKIPPED existing example:
+    kootaj=83334 rows=1
+  MATCHED automation example:
+    kootaj=210346 letter=1405/603212 id=19874377
+  UNMATCHED automation example: (none)
+  CONFLICT example: (none — no multi-letter conflicts)
+
+========================================================================

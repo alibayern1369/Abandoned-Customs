@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.next/
+.turbo/
+*.log
+.env
+.env.local
+.env.*.local
+!.env.example
+coverage/
+.DS_Store
+Thumbs.db
+packages/db/drizzle/meta/
+*.tsbuildinfo
+apps/web/.next/
+apps/web/out/
+docker-data/

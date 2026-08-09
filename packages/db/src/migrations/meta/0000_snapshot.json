@@ -1,0 +1,1713 @@
+{
+  "id": "44fca86d-7a66-41c7-876c-3a45d0af6655",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.audit_logs": {
+      "name": "audit_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "actor_user_id": {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action": {
+          "name": "action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "before_data": {
+          "name": "before_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "after_data": {
+          "name": "after_data",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "audit_logs_actor_user_id_idx": {
+          "name": "audit_logs_actor_user_id_idx",
+          "columns": [
+            {
+              "expression": "actor_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_logs_entity_type_entity_id_idx": {
+          "name": "audit_logs_entity_type_entity_id_idx",
+          "columns": [
+            {
+              "expression": "entity_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entity_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_logs_action_idx": {
+          "name": "audit_logs_action_idx",
+          "columns": [
+            {
+              "expression": "action",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_logs_created_at_idx": {
+          "name": "audit_logs_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_logs_import_batch_id_idx": {
+          "name": "audit_logs_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "audit_logs_actor_user_id_users_id_fk": {
+          "name": "audit_logs_actor_user_id_users_id_fk",
+          "tableFrom": "audit_logs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "actor_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "audit_logs_import_batch_id_import_batches_id_fk": {
+          "name": "audit_logs_import_batch_id_import_batches_id_fk",
+          "tableFrom": "audit_logs",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.import_batches": {
+      "name": "import_batches",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_type": {
+          "name": "file_type",
+          "type": "file_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "import_batch_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'RUNNING'"
+        },
+        "imported_at": {
+          "name": "imported_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_rows": {
+          "name": "total_rows",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_records": {
+          "name": "created_records",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "skipped_records": {
+          "name": "skipped_records",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "review_records": {
+          "name": "review_records",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "error_records": {
+          "name": "error_records",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "import_batches_file_type_idx": {
+          "name": "import_batches_file_type_idx",
+          "columns": [
+            {
+              "expression": "file_type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_batches_status_idx": {
+          "name": "import_batches_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_batches_created_by_idx": {
+          "name": "import_batches_created_by_idx",
+          "columns": [
+            {
+              "expression": "created_by",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_batches_imported_at_idx": {
+          "name": "import_batches_imported_at_idx",
+          "columns": [
+            {
+              "expression": "imported_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "import_batches_created_by_users_id_fk": {
+          "name": "import_batches_created_by_users_id_fk",
+          "tableFrom": "import_batches",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.import_rows": {
+      "name": "import_rows",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_row_number": {
+          "name": "source_row_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "raw_payload": {
+          "name": "raw_payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalized_kootaj": {
+          "name": "normalized_kootaj",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processing_status": {
+          "name": "processing_status",
+          "type": "import_row_processing_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "disposition": {
+          "name": "disposition",
+          "type": "import_row_disposition",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "import_rows_import_batch_id_idx": {
+          "name": "import_rows_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_rows_normalized_kootaj_idx": {
+          "name": "import_rows_normalized_kootaj_idx",
+          "columns": [
+            {
+              "expression": "normalized_kootaj",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_rows_processing_status_idx": {
+          "name": "import_rows_processing_status_idx",
+          "columns": [
+            {
+              "expression": "processing_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "import_rows_disposition_idx": {
+          "name": "import_rows_disposition_idx",
+          "columns": [
+            {
+              "expression": "disposition",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "import_rows_import_batch_id_import_batches_id_fk": {
+          "name": "import_rows_import_batch_id_import_batches_id_fk",
+          "tableFrom": "import_rows",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kootaj_items": {
+      "name": "kootaj_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kootaj_id": {
+          "name": "kootaj_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "line_no": {
+          "name": "line_no",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "row_item_no": {
+          "name": "row_item_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tariff_code": {
+          "name": "tariff_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "goods_description": {
+          "name": "goods_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gross_weight": {
+          "name": "gross_weight",
+          "type": "numeric(20, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "net_weight": {
+          "name": "net_weight",
+          "type": "numeric(20, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "package_count": {
+          "name": "package_count",
+          "type": "numeric(20, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "package_type": {
+          "name": "package_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manufacturer_country": {
+          "name": "manufacturer_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "warehouse_receipt_no": {
+          "name": "warehouse_receipt_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "e_warehouse_receipt_no": {
+          "name": "e_warehouse_receipt_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_file_type": {
+          "name": "source_file_type",
+          "type": "file_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_row_number": {
+          "name": "source_row_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_row_id": {
+          "name": "import_row_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "raw_snapshot": {
+          "name": "raw_snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "kootaj_items_kootaj_id_idx": {
+          "name": "kootaj_items_kootaj_id_idx",
+          "columns": [
+            {
+              "expression": "kootaj_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootaj_items_goods_description_idx": {
+          "name": "kootaj_items_goods_description_idx",
+          "columns": [
+            {
+              "expression": "goods_description",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootaj_items_tariff_code_idx": {
+          "name": "kootaj_items_tariff_code_idx",
+          "columns": [
+            {
+              "expression": "tariff_code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootaj_items_warehouse_receipt_no_idx": {
+          "name": "kootaj_items_warehouse_receipt_no_idx",
+          "columns": [
+            {
+              "expression": "warehouse_receipt_no",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootaj_items_import_batch_id_idx": {
+          "name": "kootaj_items_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "kootaj_items_kootaj_id_kootajs_id_fk": {
+          "name": "kootaj_items_kootaj_id_kootajs_id_fk",
+          "tableFrom": "kootaj_items",
+          "tableTo": "kootajs",
+          "columnsFrom": [
+            "kootaj_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "kootaj_items_import_batch_id_import_batches_id_fk": {
+          "name": "kootaj_items_import_batch_id_import_batches_id_fk",
+          "tableFrom": "kootaj_items",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "kootaj_items_import_row_id_import_rows_id_fk": {
+          "name": "kootaj_items_import_row_id_import_rows_id_fk",
+          "tableFrom": "kootaj_items",
+          "tableTo": "import_rows",
+          "columnsFrom": [
+            "import_row_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kootajs": {
+      "name": "kootajs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "normalized_kootaj": {
+          "name": "normalized_kootaj",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_kootaj": {
+          "name": "display_kootaj",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_origin": {
+          "name": "source_origin",
+          "type": "source_origin",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_import_batch_id": {
+          "name": "created_import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by_user_id": {
+          "name": "created_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kootaj_date": {
+          "name": "kootaj_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner_name": {
+          "name": "owner_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner_code": {
+          "name": "owner_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "broker_name": {
+          "name": "broker_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "broker_code": {
+          "name": "broker_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "declarant_name": {
+          "name": "declarant_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "declarant_code": {
+          "name": "declarant_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assessment_location": {
+          "name": "assessment_location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "declaration_stage": {
+          "name": "declaration_stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rial_value": {
+          "name": "rial_value",
+          "type": "numeric(20, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fx_value": {
+          "name": "fx_value",
+          "type": "numeric(20, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fx_currency": {
+          "name": "fx_currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fx_rate": {
+          "name": "fx_rate",
+          "type": "numeric(20, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "customs_inferred_duty": {
+          "name": "customs_inferred_duty",
+          "type": "numeric(20, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tamlik_deposit": {
+          "name": "tamlik_deposit",
+          "type": "numeric(20, 4)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "goods_status_text": {
+          "name": "goods_status_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "announced_to_tamlik_text": {
+          "name": "announced_to_tamlik_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "exit_text": {
+          "name": "exit_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "origin_country": {
+          "name": "origin_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "export_country": {
+          "name": "export_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "trade_country": {
+          "name": "trade_country",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "order_registration_no": {
+          "name": "order_registration_no",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_parent_field_conflict": {
+          "name": "has_parent_field_conflict",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "kootajs_normalized_kootaj_uidx": {
+          "name": "kootajs_normalized_kootaj_uidx",
+          "columns": [
+            {
+              "expression": "normalized_kootaj",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootajs_source_origin_idx": {
+          "name": "kootajs_source_origin_idx",
+          "columns": [
+            {
+              "expression": "source_origin",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootajs_owner_name_idx": {
+          "name": "kootajs_owner_name_idx",
+          "columns": [
+            {
+              "expression": "owner_name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootajs_order_registration_no_idx": {
+          "name": "kootajs_order_registration_no_idx",
+          "columns": [
+            {
+              "expression": "order_registration_no",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "kootajs_created_import_batch_id_idx": {
+          "name": "kootajs_created_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "created_import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "kootajs_created_import_batch_id_import_batches_id_fk": {
+          "name": "kootajs_created_import_batch_id_import_batches_id_fk",
+          "tableFrom": "kootajs",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "created_import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "kootajs_created_by_user_id_users_id_fk": {
+          "name": "kootajs_created_by_user_id_users_id_fk",
+          "tableFrom": "kootajs",
+          "tableTo": "users",
+          "columnsFrom": [
+            "created_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.letters": {
+      "name": "letters",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kootaj_id": {
+          "name": "kootaj_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "letter_number": {
+          "name": "letter_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "letter_number_original": {
+          "name": "letter_number_original",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "letter_date": {
+          "name": "letter_date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "letter_date_original": {
+          "name": "letter_date_original",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "letter_date_source": {
+          "name": "letter_date_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "letter_system_id": {
+          "name": "letter_system_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registrar": {
+          "name": "registrar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_method": {
+          "name": "extraction_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extracted_kootaj_raw": {
+          "name": "extracted_kootaj_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "import_row_id": {
+          "name": "import_row_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attached_by_user_id": {
+          "name": "attached_by_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "letters_kootaj_id_uidx": {
+          "name": "letters_kootaj_id_uidx",
+          "columns": [
+            {
+              "expression": "kootaj_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "letters_letter_number_idx": {
+          "name": "letters_letter_number_idx",
+          "columns": [
+            {
+              "expression": "letter_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "letters_import_batch_id_idx": {
+          "name": "letters_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "letters_kootaj_id_kootajs_id_fk": {
+          "name": "letters_kootaj_id_kootajs_id_fk",
+          "tableFrom": "letters",
+          "tableTo": "kootajs",
+          "columnsFrom": [
+            "kootaj_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "letters_import_batch_id_import_batches_id_fk": {
+          "name": "letters_import_batch_id_import_batches_id_fk",
+          "tableFrom": "letters",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "letters_import_row_id_import_rows_id_fk": {
+          "name": "letters_import_row_id_import_rows_id_fk",
+          "tableFrom": "letters",
+          "tableTo": "import_rows",
+          "columnsFrom": [
+            "import_row_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "letters_attached_by_user_id_users_id_fk": {
+          "name": "letters_attached_by_user_id_users_id_fk",
+          "tableFrom": "letters",
+          "tableTo": "users",
+          "columnsFrom": [
+            "attached_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.review_items": {
+      "name": "review_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "review_item_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "review_item_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'OPEN'"
+        },
+        "import_batch_id": {
+          "name": "import_batch_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "import_row_id": {
+          "name": "import_row_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kootaj_id": {
+          "name": "kootaj_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "normalized_kootaj": {
+          "name": "normalized_kootaj",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "resolution_note": {
+          "name": "resolution_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_by": {
+          "name": "resolved_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_at": {
+          "name": "resolved_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "review_items_status_idx": {
+          "name": "review_items_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "review_items_type_idx": {
+          "name": "review_items_type_idx",
+          "columns": [
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "review_items_status_type_idx": {
+          "name": "review_items_status_type_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "review_items_import_batch_id_idx": {
+          "name": "review_items_import_batch_id_idx",
+          "columns": [
+            {
+              "expression": "import_batch_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "review_items_kootaj_id_idx": {
+          "name": "review_items_kootaj_id_idx",
+          "columns": [
+            {
+              "expression": "kootaj_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "review_items_normalized_kootaj_idx": {
+          "name": "review_items_normalized_kootaj_idx",
+          "columns": [
+            {
+              "expression": "normalized_kootaj",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "review_items_import_batch_id_import_batches_id_fk": {
+          "name": "review_items_import_batch_id_import_batches_id_fk",
+          "tableFrom": "review_items",
+          "tableTo": "import_batches",
+          "columnsFrom": [
+            "import_batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "review_items_import_row_id_import_rows_id_fk": {
+          "name": "review_items_import_row_id_import_rows_id_fk",
+          "tableFrom": "review_items",
+          "tableTo": "import_rows",
+          "columnsFrom": [
+            "import_row_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "review_items_kootaj_id_kootajs_id_fk": {
+          "name": "review_items_kootaj_id_kootajs_id_fk",
+          "tableFrom": "review_items",
+          "tableTo": "kootajs",
+          "columnsFrom": [
+            "kootaj_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "review_items_resolved_by_users_id_fk": {
+          "name": "review_items_resolved_by_users_id_fk",
+          "tableFrom": "review_items",
+          "tableTo": "users",
+          "columnsFrom": [
+            "resolved_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'viewer'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "users_username_uidx": {
+          "name": "users_username_uidx",
+          "columns": [
+            {
+              "expression": "username",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "users_role_idx": {
+          "name": "users_role_idx",
+          "columns": [
+            {
+              "expression": "role",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.file_type": {
+      "name": "file_type",
+      "schema": "public",
+      "values": [
+        "FILE1",
+        "FILE2",
+        "FILE3"
+      ]
+    },
+    "public.import_batch_status": {
+      "name": "import_batch_status",
+      "schema": "public",
+      "values": [
+        "RUNNING",
+        "COMPLETED",
+        "COMPLETED_WITH_REVIEW",
+        "FAILED"
+      ]
+    },
+    "public.import_row_disposition": {
+      "name": "import_row_disposition",
+      "schema": "public",
+      "values": [
+        "CREATED_KOOTAJ",
+        "CREATED_ITEM",
+        "SKIPPED_EXISTING",
+        "LETTER_ATTACHED",
+        "LETTER_DRAFT_IGNORED",
+        "UNMATCHED",
+        "EXTRACTION_FAILED",
+        "CONFLICT",
+        "PARENT_FIELD_CONFLICT",
+        "IGNORED_EMPTY_KEY",
+        "ERROR",
+        "REVIEW"
+      ]
+    },
+    "public.import_row_processing_status": {
+      "name": "import_row_processing_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "PROCESSED",
+        "FAILED",
+        "SKIPPED"
+      ]
+    },
+    "public.review_item_status": {
+      "name": "review_item_status",
+      "schema": "public",
+      "values": [
+        "OPEN",
+        "RESOLVED",
+        "IGNORED"
+      ]
+    },
+    "public.review_item_type": {
+      "name": "review_item_type",
+      "schema": "public",
+      "values": [
+        "EXTRACTION_FAILED",
+        "UNMATCHED",
+        "LETTER_CONFLICT",
+        "PARENT_FIELD_CONFLICT"
+      ]
+    },
+    "public.source_origin": {
+      "name": "source_origin",
+      "schema": "public",
+      "values": [
+        "FILE1",
+        "FILE2"
+      ]
+    },
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "public",
+      "values": [
+        "viewer",
+        "importer",
+        "reviewer",
+        "admin"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

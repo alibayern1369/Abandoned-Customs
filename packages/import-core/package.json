@@ -1,0 +1,26 @@
+{
+  "name": "@metrookeh/import-core",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "description": "Excel analysis, dry-run provenance, and File1/File2/File3 domain writers (Phase 6). Matching rules mirror @metrookeh/validator.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "tsx --test --test-concurrency=1 tests/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@metrookeh/db": "*",
+    "@metrookeh/domain": "*",
+    "drizzle-orm": "^0.44.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "dotenv": "^16.5.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}
