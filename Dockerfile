@@ -47,10 +47,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
-# DB migrate/seed tooling (small isolated install)
+# DB migrate/seed tooling (small isolated install).
+# Use a dedicated package.json so dotenv/tsx are production deps
+# (they are only devDependencies in packages/db for local development).
 WORKDIR /app/db-tools
-COPY packages/db/package.json ./package.json
-RUN npm install --omit=dev postgres@3.4.7 drizzle-orm@0.44.2 dotenv@16.5.0 tsx@4.19.4 \
+RUN printf '%s\n' '{"name":"metrookeh-db-tools","private":true,"type":"module","dependencies":{"dotenv":"16.5.0","drizzle-orm":"0.44.2","postgres":"3.4.7","tsx":"4.19.4"}}' > package.json \
+  && npm install --omit=dev \
   && npm cache clean --force
 COPY packages/db/src ./src
 RUN chown -R nextjs:nodejs /app/db-tools

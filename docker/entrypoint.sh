@@ -29,11 +29,11 @@ echo "Postgres is ready."
 
 echo "Running migrations..."
 cd /app/db-tools
-npx tsx src/migrate.ts
+./node_modules/.bin/tsx src/migrate.ts
 
 if [ -n "${SEED_ADMIN_PASSWORD:-}" ]; then
   echo "Running seed (skips if admin already exists)..."
-  npx tsx src/seed.ts
+  ./node_modules/.bin/tsx src/seed.ts
 else
   echo "SEED_ADMIN_PASSWORD not set — skipping seed."
 fi
