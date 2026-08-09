@@ -120,6 +120,79 @@ export function normalizeLetterDate(raw: unknown): string | null {
 }
 
 /**
+ * True when value looks like a registration number (سال/سریال), not a calendar date.
+ * Serial must have ≥4 digits so `1403/09/20` is never treated as a letter.
+ */
+export function isLetterRegistrationNumber(raw: unknown): boolean {
+  const n = normalizeLetterNumber(raw);
+  return n != null && /^\d{2,4}\/\d{4,}$/.test(n);
+}
+
+export type AnnouncedToTamlikParse = {
+  original: string;
+  letterNumber: string | null;
+  letterNumberOriginal: string | null;
+  letterDate: string | null;
+  letterDateOriginal: string | null;
+  hasValidLetterNumber: boolean;
+};
+
+/**
+ * Parse File1 column «تاریخ اعلام به اموال تملیکی».
+ * Examples:
+ * - `1403/1386642 ‪1403/09/20ش 12:33` → letter + date (has letter)
+ * - `1401/175788` → letter only (has letter)
+ * - `1403/09/20ش 12:33` or incomplete text without serial → no letter
+ */
+export function parseAnnouncedToTamlik(raw: unknown): AnnouncedToTamlikParse {
+  const original = raw == null || raw === '' ? '' : String(raw).trim();
+  if (!original) {
+    return {
+      original: '',
+      letterNumber: null,
+      letterNumberOriginal: null,
+      letterDate: null,
+      letterDateOriginal: null,
+      hasValidLetterNumber: false,
+    };
+  }
+
+  let cleaned = foldDigits(original);
+  cleaned = cleaned.replace(/[\u200E\u200F\u202A-\u202E\uFEFF\u00A0]/g, '');
+  cleaned = cleaned.replace(/[\u00AD\u009D]/g, '/');
+  cleaned = cleaned.replace(/\/{2,}/g, '/').trim();
+
+  // Registration: year/serial with serial ≥4 digits (not month 01–12).
+  const letterMatch = cleaned.match(/(\d{2,4}\/\d{4,})/);
+  let letterNumber: string | null = null;
+  let letterNumberOriginal: string | null = null;
+  if (letterMatch && isLetterRegistrationNumber(letterMatch[1])) {
+    letterNumber = normalizeLetterNumber(letterMatch[1]);
+    letterNumberOriginal = letterMatch[1];
+  }
+
+  // Shamsi date optionally with «ش» and time.
+  const dateMatch = cleaned.match(
+    /(\d{2,4}\/\d{1,2}\/\d{1,2}(?:ش)?(?:\s+\d{1,2}:\d{2}(?::\d{2})?)?)/,
+  );
+  let letterDate: string | null = null;
+  let letterDateOriginal: string | null = null;
+  if (dateMatch) {
+    letterDate = normalizeLetterDate(dateMatch[1]);
+    letterDateOriginal = dateMatch[1];
+  }
+
+  return {
+    original,
+    letterNumber,
+    letterNumberOriginal,
+    letterDate,
+    letterDateOriginal,
+    hasValidLetterNumber: letterNumber != null,
+  };
+}
+
+/**
  * Extract Kootaj from File 3 Description using confirmed deterministic regex.
  * Primary: شماره کوتاژ <digits>
  * Fallback: کوتاژ <digits>

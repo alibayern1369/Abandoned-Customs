@@ -13,10 +13,12 @@ import {
   kootajItems,
   reviewItems,
   auditLogs,
+  letters,
   type Database,
 } from '@metrookeh/db';
 import { readWorkbook } from '../excel.js';
 import { processFile1 } from '../file1.js';
+import { parseAnnouncedToTamlik } from '../normalize.js';
 import { planFile1DryRun } from '../dry-run/plan.js';
 import type { DryRunBatchCounters, DryRunPlan } from '../dry-run/types.js';
 import { collectFile1PhysicalGroups } from './file1-groups.js';
@@ -153,6 +155,41 @@ export async function writeFile1Import(
       }
       const itemsCreated = allItems.length;
 
+      // --- Letters from «تاریخ اعلام به اموال تملیکی» (year/serial only; date-only ignored) ---
+      const letterValues: Array<{
+        kootajId: string;
+        letterNumber: string;
+        letterNumberOriginal: string | null;
+        letterDate: string | null;
+        letterDateOriginal: string | null;
+        letterDateSource: string | null;
+        extractionMethod: string;
+        importBatchId: string;
+        attachedByUserId: string | null;
+      }> = [];
+
+      for (const { record, mapped } of parentPayloads) {
+        const parsed = parseAnnouncedToTamlik(mapped.announcedToTamlikText);
+        if (!parsed.hasValidLetterNumber || !parsed.letterNumber) continue;
+        const kootajId = kootajIdByNormalized.get(record.normalized_kootaj);
+        if (!kootajId) continue;
+        letterValues.push({
+          kootajId,
+          letterNumber: parsed.letterNumber,
+          letterNumberOriginal: parsed.letterNumberOriginal,
+          letterDate: parsed.letterDate,
+          letterDateOriginal: parsed.letterDateOriginal,
+          letterDateSource: parsed.letterDate ? 'announced_to_tamlik' : null,
+          extractionMethod: 'announced_to_tamlik',
+          importBatchId: batchId,
+          attachedByUserId: options.createdBy ?? null,
+        });
+      }
+
+      if (letterValues.length > 0) {
+        await tx.insert(letters).values(letterValues);
+      }
+
       // --- Parent-field conflict reviews ---
       const conflictRecords = analysis.kootajs.filter((k) => k.parent_field_conflicts.length > 0);
       const reviewRows: Array<{
@@ -215,6 +252,23 @@ export async function writeFile1Import(
             source_origin: 'FILE1',
             item_count: physical.rows.length,
             has_parent_field_conflict: record.parent_field_conflicts.length > 0,
+          },
+          metadata: { file_type: 'FILE1' },
+          importBatchId: batchId,
+        });
+      }
+
+      for (const letter of letterValues) {
+        auditValues.push({
+          actorUserId: options.createdBy ?? null,
+          action: 'LETTER_ATTACHED_FROM_ANNOUNCED',
+          entityType: 'letter',
+          entityId: letter.kootajId,
+          beforeData: null,
+          afterData: {
+            letter_number: letter.letterNumber,
+            letter_date: letter.letterDate,
+            source: 'announced_to_tamlik',
           },
           metadata: { file_type: 'FILE1' },
           importBatchId: batchId,

@@ -101,8 +101,11 @@ export {
   normalizeNumber,
   normalizeLetterNumber,
   normalizeLetterDate,
+  isLetterRegistrationNumber,
+  parseAnnouncedToTamlik,
   extractKootajFromDescription,
   cellToString,
+  type AnnouncedToTamlikParse,
 } from './normalize.js';
 
 export {

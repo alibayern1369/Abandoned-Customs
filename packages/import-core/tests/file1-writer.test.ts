@@ -226,6 +226,65 @@ describe('writeFile1Import (synthetic)', () => {
     assert.equal(batchLetters.length, 0);
   });
 
+  it('attaches letter from تاریخ اعلام به اموال تملیکی and skips date-only', async () => {
+    const workbook: Workbook = {
+      sheetNames: ['متروکه کلی'],
+      sheets: {
+        'متروکه کلی': [
+          {
+            'شماره کوتاژ': '840001',
+            'شرح کالا': 'with letter',
+            'وزن ناخالص': '1',
+            'تاریخ اعلام به اموال تملیکی': '1403/1386642 \u202A1403/09/20ش 12:33',
+          },
+          {
+            'شماره کوتاژ': '840002',
+            'شرح کالا': 'date only',
+            'وزن ناخالص': '2',
+            'تاریخ اعلام به اموال تملیکی': '1403/09/20ش 12:33',
+          },
+          {
+            'شماره کوتاژ': '840003',
+            'شرح کالا': 'serial only',
+            'وزن ناخالص': '3',
+            'تاریخ اعلام به اموال تملیکی': '1401/175788',
+          },
+        ],
+      },
+      filePath: 'phase4-announced-letter-file1.xlsx',
+    };
+
+    const result = await writeFile1Import({
+      db,
+      filePath: workbook.filePath!,
+      workbook,
+    });
+    createdBatchIds.push(result.batchId);
+
+    assert.equal(result.kootajCreated, 3);
+
+    const batchLetters = await db
+      .select()
+      .from(letters)
+      .where(eq(letters.importBatchId, result.batchId));
+    assert.equal(batchLetters.length, 2);
+
+    const byNumber = new Map(batchLetters.map((l) => [l.letterNumber, l]));
+    assert.ok(byNumber.has('1403/1386642'));
+    assert.ok(byNumber.has('1401/175788'));
+    assert.ok(byNumber.get('1403/1386642')!.letterDate!.startsWith('1403/09/20'));
+    assert.equal(byNumber.get('1401/175788')!.letterDate, null);
+    assert.equal(byNumber.get('1403/1386642')!.extractionMethod, 'announced_to_tamlik');
+
+    const parents = await db
+      .select()
+      .from(kootajs)
+      .where(eq(kootajs.createdImportBatchId, result.batchId));
+    const withoutLetter = parents.find((p) => p.normalizedKootaj === '840002')!;
+    const attachedIds = new Set(batchLetters.map((l) => l.kootajId));
+    assert.equal(attachedIds.has(withoutLetter.id), false);
+  });
+
   it('creates PARENT_FIELD_CONFLICT review when parent fields disagree', async () => {
     const workbook: Workbook = {
       sheetNames: ['متروکه کلی'],
@@ -394,6 +453,8 @@ describe('writeFile1Import (real Excel)', () => {
       .select()
       .from(letters)
       .where(eq(letters.importBatchId, result.batchId));
-    assert.equal(batchLetters.length, 0);
+    // Real Amar File1 has announced-to-tamlik serials on many rows.
+    assert.ok(batchLetters.length > 0);
+    assert.ok(batchLetters.every((l) => l.extractionMethod === 'announced_to_tamlik'));
   });
 });

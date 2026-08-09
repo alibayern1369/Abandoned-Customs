@@ -24,14 +24,14 @@ import { getCol, readWorkbookFromBuffer } from '../excel.js';
 import { processFile1 } from '../file1.js';
 import { processFile2 } from '../file2.js';
 import { processFile3 } from '../file3.js';
-import { cellToString } from '../normalize.js';
+import { cellToString, parseAnnouncedToTamlik } from '../normalize.js';
 import type { ExcelRow, KootajRecord, Workbook } from '../types.js';
 import type { FileType } from '@metrookeh/domain';
 import { collectFile1PhysicalGroups } from '../writers/file1-groups.js';
 import { collectFile2PhysicalGroups } from '../writers/file2-groups.js';
 import { mapFile1Item, mapFile1Kootaj } from '../writers/map-file1.js';
 import { mapFile2Item, mapFile2Kootaj } from '../writers/map-file2.js';
-import { mapFile3Letter } from '../writers/map-file3.js';
+import { mapFile3Letter, type File3LetterInsert } from '../writers/map-file3.js';
 
 export const MERGEABLE_PARENT_FIELDS = [
   'displayKootaj',
@@ -404,6 +404,95 @@ function buildEntriesFromFile2(
   return entries;
 }
 
+function letterIncomingFromAnnounced(
+  announced: string | null | undefined,
+): File3LetterInsert | null {
+  const parsed = parseAnnouncedToTamlik(announced);
+  if (!parsed.hasValidLetterNumber || !parsed.letterNumber) return null;
+  return {
+    letterNumber: parsed.letterNumber,
+    letterNumberOriginal: parsed.letterNumberOriginal,
+    letterDate: parsed.letterDate,
+    letterDateOriginal: parsed.letterDateOriginal,
+    letterDateSource: parsed.letterDate ? 'announced_to_tamlik' : null,
+    description: null,
+    letterSystemId: null,
+    registrar: null,
+    extractionMethod: 'announced_to_tamlik',
+    extractedKootajRaw: null,
+  };
+}
+
+/**
+ * Letters from File1 «تاریخ اعلام به اموال تملیکی».
+ * Only year/serial (≥4-digit serial) counts as having a letter; date-only → without letter.
+ * Later uploads that gain a serial ATTACH; conflicting serials → review.
+ */
+function buildLettersFromFile1Announced(
+  entries: MergeKootajEntry[],
+  existingMap: Map<string, typeof kootajs.$inferSelect>,
+  letterMap: Map<string, typeof letters.$inferSelect>,
+): MergeLetterEntry[] {
+  const out: MergeLetterEntry[] = [];
+
+  for (const entry of entries) {
+    const incoming = letterIncomingFromAnnounced(entry.incomingParent.announcedToTamlikText);
+    if (!incoming) continue;
+
+    const existing = existingMap.get(entry.normalizedKootaj) ?? null;
+    if (!existing) {
+      out.push({
+        kind: 'ATTACH',
+        normalizedKootaj: entry.normalizedKootaj,
+        existingKootajId: null,
+        existingLetterNumber: null,
+        incoming,
+        reason: 'نامه از ستون اعلام به اموال تملیکی (کوتاژ جدید)',
+      });
+      continue;
+    }
+
+    const existingLetter = letterMap.get(existing.id) ?? null;
+    const decision = decideLetterAttach({
+      kootajExists: true,
+      hasValidLetterNumber: true,
+      existingLetterNumber: existingLetter?.letterNumber ?? null,
+      incomingLetterNumber: incoming.letterNumber,
+    });
+
+    if (decision.action === 'ATTACH') {
+      out.push({
+        kind: 'ATTACH',
+        normalizedKootaj: entry.normalizedKootaj,
+        existingKootajId: existing.id,
+        existingLetterNumber: null,
+        incoming,
+        reason: 'نامه از ستون اعلام به اموال تملیکی',
+      });
+    } else if (decision.action === 'CONFLICT_REVIEW') {
+      out.push({
+        kind: 'CONFLICT',
+        normalizedKootaj: entry.normalizedKootaj,
+        existingKootajId: existing.id,
+        existingLetterNumber: existingLetter?.letterNumber ?? null,
+        incoming,
+        reason: decision.reason,
+      });
+    } else {
+      out.push({
+        kind: 'SKIP',
+        normalizedKootaj: entry.normalizedKootaj,
+        existingKootajId: existing.id,
+        existingLetterNumber: existingLetter?.letterNumber ?? null,
+        incoming,
+        reason: decision.reason,
+      });
+    }
+  }
+
+  return out;
+}
+
 async function buildLetterEntries(
   workbook: Workbook,
   db: Database['db'],
@@ -527,12 +616,21 @@ export async function buildMergeReportFromBuffer(options: {
       ? buildEntriesFromFile1(workbook, existingMap)
       : buildEntriesFromFile2(workbook, existingMap);
 
+  let letterEntries: MergeLetterEntry[] = [];
+  if (fileType === 'FILE1') {
+    const letterMap = await loadLettersByKootajIds(
+      options.db,
+      [...existingMap.values()].map((row) => row.id),
+    );
+    letterEntries = buildLettersFromFile1Announced(entries, existingMap, letterMap);
+  }
+
   return {
     fileName: options.fileName,
     fileType,
-    summary: summarize(entries, []),
+    summary: summarize(entries, letterEntries),
     kootajs: entries,
-    letters: [],
+    letters: letterEntries,
   };
 }
 
@@ -695,6 +793,7 @@ export async function applyMergeDecisions(options: {
     let updated = 0;
     let itemsCreated = 0;
     let reviewCreated = 0;
+    const createdIdByKey = new Map<string, string>();
 
     for (const entry of report.kootajs) {
       if (entry.kind === 'CREATE') {
@@ -714,6 +813,7 @@ export async function applyMergeDecisions(options: {
           .values(parentValues as typeof kootajs.$inferInsert)
           .returning({ id: kootajs.id });
 
+        createdIdByKey.set(entry.normalizedKootaj, inserted.id);
         itemsCreated += await insertItems(tx, inserted.id, batchId, entry.items, new Set(), true);
         created += 1;
 
@@ -764,11 +864,17 @@ export async function applyMergeDecisions(options: {
     }
 
     for (const letterEntry of report.letters) {
-      if (letterEntry.kind === 'ATTACH' && letterEntry.existingKootajId) {
+      const resolvedKootajId =
+        letterEntry.existingKootajId ??
+        (letterEntry.normalizedKootaj
+          ? (createdIdByKey.get(letterEntry.normalizedKootaj) ?? null)
+          : null);
+
+      if (letterEntry.kind === 'ATTACH' && resolvedKootajId) {
         const resolution = letterDecisionMap.get(letterEntry.normalizedKootaj ?? '') ?? 'ATTACH';
         if (resolution === 'SKIP') continue;
         await tx.insert(letters).values({
-          kootajId: letterEntry.existingKootajId,
+          kootajId: resolvedKootajId,
           ...letterEntry.incoming,
           importBatchId: batchId,
           attachedByUserId: options.createdBy ?? null,
@@ -777,7 +883,7 @@ export async function applyMergeDecisions(options: {
           actorUserId: options.createdBy ?? null,
           action: 'LETTER_ATTACH_UPLOAD',
           entityType: 'letter',
-          entityId: letterEntry.existingKootajId,
+          entityId: resolvedKootajId,
           afterData: letterEntry.incoming,
           importBatchId: batchId,
         });

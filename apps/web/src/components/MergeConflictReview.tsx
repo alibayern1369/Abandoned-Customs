@@ -69,7 +69,7 @@ export function MergeConflictReview({
         <SummaryCard label="تداخل فیلد" value={report.summary.conflictFields} tone="warn" />
       </div>
 
-      {report.fileType === 'FILE3' ? (
+      {report.letters.length > 0 ? (
         <section className="rounded-2xl border border-line bg-elevated/70 p-4">
           <h3 className="mb-2 font-semibold">نامه‌ها</h3>
           <p className="text-sm text-muted">
@@ -78,7 +78,9 @@ export function MergeConflictReview({
             {faNumber(report.summary.lettersUnmatched)}
           </p>
           <ul className="mt-3 space-y-2 text-sm">
-            {report.letters.map((letter, idx) => (
+            {report.letters
+              .filter((letter) => letter.kind !== 'SKIP')
+              .map((letter, idx) => (
               <li key={idx} className="rounded-xl bg-surface/50 px-3 py-2">
                 <Badge tone={letter.kind === 'CONFLICT' ? 'warn' : letter.kind === 'UNMATCHED' ? 'danger' : 'ok'}>
                   {letter.kind}

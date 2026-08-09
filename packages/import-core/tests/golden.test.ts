@@ -12,6 +12,7 @@ import {
   extractKootajFromDescription,
   normalizeLetterNumber,
   normalizeLetterDate,
+  parseAnnouncedToTamlik,
   processFile1,
   processFile2,
   processFile3,
@@ -222,6 +223,35 @@ describe('Letter number & date parsing', () => {
     const d = normalizeLetterDate('\u202A1405/02/16ش 14:38');
     assert.ok(d!.startsWith('1405'));
     assert.equal(normalizeLetterDate(''), null);
+  });
+});
+
+describe('parseAnnouncedToTamlik (File1 اعلام به تملیکی)', () => {
+  it('extracts letter number and date from combined cell', () => {
+    const p = parseAnnouncedToTamlik('1403/1386642 \u202A1403/09/20ش 12:33');
+    assert.equal(p.hasValidLetterNumber, true);
+    assert.equal(p.letterNumber, '1403/1386642');
+    assert.ok(p.letterDate!.startsWith('1403/09/20'));
+  });
+
+  it('treats year/serial-only as having a letter', () => {
+    const p = parseAnnouncedToTamlik('1401/175788');
+    assert.equal(p.hasValidLetterNumber, true);
+    assert.equal(p.letterNumber, '1401/175788');
+    assert.equal(p.letterDate, null);
+  });
+
+  it('treats date-only or incomplete cells as without letter', () => {
+    assert.equal(parseAnnouncedToTamlik('1403/09/20ش 12:33').hasValidLetterNumber, false);
+    assert.equal(parseAnnouncedToTamlik('1403/09/20').hasValidLetterNumber, false);
+    assert.equal(parseAnnouncedToTamlik('').hasValidLetterNumber, false);
+    assert.equal(parseAnnouncedToTamlik(null).hasValidLetterNumber, false);
+  });
+
+  it('finds serial after a date prefix (legacy dash form)', () => {
+    const p = parseAnnouncedToTamlik('99/2/30-99/198442');
+    assert.equal(p.hasValidLetterNumber, true);
+    assert.equal(p.letterNumber, '99/198442');
   });
 });
 
