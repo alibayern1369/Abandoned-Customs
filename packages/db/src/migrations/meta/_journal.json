@@ -22,6 +22,13 @@
       "when": 1786262000000,
       "tag": "0002_audit_logs_batch_fk_restrict",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1786300000000,
+      "tag": "0003_merge_drafts",
+      "breakpoints": true
     }
   ]
 }

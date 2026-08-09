@@ -12,11 +12,13 @@
   "dependencies": {
     "@metrookeh/db": "*",
     "@metrookeh/domain": "*",
+    "@metrookeh/import-core": "*",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.44.2",
     "next": "^15.3.3",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "xlsx": "^0.18.5"
   },
   "optionalDependencies": {
     "lightningcss-win32-x64-msvc": "^1.32.0"

@@ -118,6 +118,7 @@ export {
 export {
   resolveSourcePaths,
   readWorkbook,
+  readWorkbookFromBuffer,
   getCol,
   canDiscoverSourceFiles,
 } from './excel.js';
@@ -180,6 +181,29 @@ export {
   type WriteFile3ImportResult,
   type File3LetterInsert,
 } from './writers/index.js';
+
+export {
+  decideFieldMerge,
+  type FieldMergeAction,
+  type FieldMergeResolution,
+} from '@metrookeh/domain';
+
+export {
+  buildMergeReportFromBuffer,
+  createMergeDraft,
+  getMergeDraft,
+  applyMergeDecisions,
+  detectUploadFileType,
+  MERGEABLE_PARENT_FIELDS,
+  PARENT_FIELD_LABELS,
+  type MergeReport,
+  type MergeKootajEntry,
+  type MergeLetterEntry,
+  type FieldDiff,
+  type FieldDecision,
+  type LetterDecision,
+  type MergeableParentField,
+} from './merge/upload-merge.js';
 
 export {
   PRIOR_ANALYSIS_EXPECTATIONS,

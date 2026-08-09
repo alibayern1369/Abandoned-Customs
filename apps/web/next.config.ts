@@ -7,8 +7,8 @@ const rootDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..')
 loadEnvConfig(rootDir);
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@metrookeh/db', '@metrookeh/domain'],
-  serverExternalPackages: ['postgres'],
+  transpilePackages: ['@metrookeh/db', '@metrookeh/domain', '@metrookeh/import-core'],
+  serverExternalPackages: ['postgres', 'xlsx'],
   webpack: (config) => {
     config.resolve.extensionAlias = {
       ...(config.resolve.extensionAlias ?? {}),

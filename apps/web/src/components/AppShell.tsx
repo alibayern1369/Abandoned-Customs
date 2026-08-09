@@ -4,7 +4,8 @@ import { logoutAction } from '@/app/actions';
 
 const NAV = [
   { href: '/', label: 'خلاصه' },
-  { href: '/kootajs', label: 'کوتاژها' },
+  { href: '/kootajs', label: 'کوتاژهای متروکه' },
+  { href: '/imports/upload', label: 'آپلود اکسل' },
   { href: '/reviews', label: 'صف بررسی' },
   { href: '/imports', label: 'تاریخچه ورود' },
 ] as const;
@@ -17,19 +18,21 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[16rem_1fr]">
-      <aside className="border-b border-line bg-elevated/90 lg:border-b-0 lg:border-l">
+    <div className="min-h-screen lg:grid lg:grid-cols-[17rem_1fr]">
+      <aside className="border-b border-line bg-elevated/95 backdrop-blur lg:border-b-0 lg:border-l">
         <div className="px-5 py-6">
-          <p className="text-xs font-medium tracking-wide text-muted">سامانه گمرکی</p>
-          <h1 className="mt-1 text-2xl font-bold text-accent">متروکه</h1>
-          <p className="mt-2 text-sm text-muted">مدیریت کالاهای متروکه</p>
+          <p className="text-[0.7rem] font-semibold tracking-[0.14em] text-muted">سامانه گمرکی</p>
+          <h1 className="mt-1 font-[family-name:var(--font-sans)] text-3xl font-bold tracking-tight text-accent">
+            متروکه
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted">مدیریت کوتاژهای متروکه</p>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-4 lg:flex-col lg:overflow-visible">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-ink transition hover:bg-accent-soft"
+              className="whitespace-nowrap rounded-xl px-3 py-2.5 text-sm font-medium text-ink transition hover:bg-accent-soft"
             >
               {item.label}
             </Link>

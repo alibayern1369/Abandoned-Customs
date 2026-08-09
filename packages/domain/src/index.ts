@@ -75,3 +75,30 @@ export function decideLetterAttach(input: {
 export function decideFile2Action(exists: boolean): 'SKIP' | 'CREATE' {
   return exists ? 'SKIP' : 'CREATE';
 }
+
+/** Upload-merge field outcomes (UI path — separate from File2 SKIP). */
+export const FIELD_MERGE_ACTIONS = ['FILL', 'SAME', 'CONFLICT', 'SKIP_EMPTY'] as const;
+export type FieldMergeAction = (typeof FIELD_MERGE_ACTIONS)[number];
+
+export const FIELD_MERGE_RESOLUTIONS = ['KEEP', 'TAKE', 'SKIP'] as const;
+export type FieldMergeResolution = (typeof FIELD_MERGE_RESOLUTIONS)[number];
+
+function normalizeFieldValue(value: string | null | undefined): string {
+  return (value ?? '').trim();
+}
+
+/**
+ * Compare one parent field for upload merge.
+ * EMPTY DB + incoming → FILL; both equal → SAME; both non-empty and different → CONFLICT.
+ */
+export function decideFieldMerge(
+  existing: string | null | undefined,
+  incoming: string | null | undefined,
+): FieldMergeAction {
+  const a = normalizeFieldValue(existing);
+  const b = normalizeFieldValue(incoming);
+  if (b === '') return 'SKIP_EMPTY';
+  if (a === '') return 'FILL';
+  if (a === b) return 'SAME';
+  return 'CONFLICT';
+}

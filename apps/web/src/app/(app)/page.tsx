@@ -20,11 +20,11 @@ export default async function DashboardPage() {
 
       <section className="grid gap-x-8 sm:grid-cols-2 xl:grid-cols-3">
         <StatLink href="/kootajs" label="همه کوتاژها" value={stats.totalKootajs} />
-        <StatLink href="/kootajs?origin=FILE2" label="کوتاژهای جدید (فایل ۲)" value={stats.file2} />
-        <StatLink href="/kootajs?letter=with" label="با نامه" value={stats.withLetter} />
-        <StatLink href="/kootajs?letter=without" label="بدون نامه" value={stats.withoutLetter} />
-        <StatLink href="/kootajs?exit=exited" label="دارای متن خروج" value={stats.exited} />
-        <StatLink href="/reviews?status=OPEN" label="موارد باز بررسی" value={stats.openReviews} />
+        <StatLink href="/kootajs?tab=with_letter" label="با نامه" value={stats.withLetter} />
+        <StatLink href="/kootajs?tab=without_letter" label="بدون نامه" value={stats.withoutLetter} />
+        <StatLink href="/kootajs?tab=exited" label="خارج‌شده" value={stats.exited} />
+        <StatLink href="/kootajs?tab=needs_review" label="نیاز به بررسی" value={stats.openReviews} />
+        <StatLink href="/imports/upload" label="آپلود اکسل" value={stats.recentBatches.length} />
       </section>
 
       <section className="mt-10">

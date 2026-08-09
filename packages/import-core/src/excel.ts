@@ -73,6 +73,23 @@ function discoverFiles(dir: string): { file1: string; file2: string; file3: stri
 /** Read workbook as array-of-objects per sheet (header row 1). Read-only. */
 export function readWorkbook(filePath: string): Workbook {
   const wb = XLSX.readFile(filePath, { cellDates: false, raw: false });
+  return workbookFromXlsx(wb, filePath);
+}
+
+/** Read workbook from an in-memory buffer (UI upload). */
+export function readWorkbookFromBuffer(
+  buffer: Buffer | ArrayBuffer | Uint8Array,
+  fileName = 'upload.xlsx',
+): Workbook {
+  const data =
+    buffer instanceof Buffer
+      ? buffer
+      : Buffer.from(buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : buffer);
+  const wb = XLSX.read(data, { type: 'buffer', cellDates: false, raw: false });
+  return workbookFromXlsx(wb, fileName);
+}
+
+function workbookFromXlsx(wb: XLSX.WorkBook, filePath: string): Workbook {
   const sheets: Record<string, ExcelRow[]> = {};
   for (const name of wb.SheetNames) {
     const ws = wb.Sheets[name];

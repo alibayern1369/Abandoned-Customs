@@ -10,3 +10,4 @@ export { kootajItems } from './kootaj-items.js';
 export { letters } from './letters.js';
 export { reviewItems, reviewItemTypeEnum, reviewItemStatusEnum } from './review-items.js';
 export { auditLogs } from './audit-logs.js';
+export { mergeDrafts, mergeDraftStatusEnum } from './merge-drafts.js';

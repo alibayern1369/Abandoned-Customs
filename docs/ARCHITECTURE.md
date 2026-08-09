@@ -40,10 +40,10 @@ Excel Export (from DB — never from prior Excel as master)
 
 | Layer | Responsibility |
 |--------|----------------|
-| `domain` | Entities and invariants (1 Kootaj, 0..1 letter, File2 SKIP) |
-| `import-core` | Deterministic normalize/match/aggregate; dry-run; File1/File2/File3 domain writers |
-| `db` | Schema, constraints, repositories |
-| `web` | Auth, queries, review actions, RTL dashboard (later) |
+| `domain` | Entities and invariants (1 Kootaj, 0..1 letter, File2 SKIP, Upload Merge field decisions) |
+| `import-core` | Deterministic normalize/match/aggregate; dry-run; File1/File2/File3 writers; UI upload merge |
+| `db` | Schema, constraints, repositories (`merge_drafts` for awaiting upload resolutions) |
+| `web` | Auth, queries, review actions, RTL card dashboard, Excel upload/export, print |
 
 ## Core invariants
 
@@ -114,5 +114,19 @@ Do **not** create a single `kootajs.status` column. Compose filters from:
 
 **Phase 1–6:** foundation through File3 letter attach + production import chain.
 
-**Dashboard (apps/web):** RTL Next.js UI with seed-admin login, independent Kootaj filters, review resolve/ignore, import history. Excel upload / full RBAC / AI still deferred.
+**Dashboard (apps/web):** RTL Next.js UI with seed-admin login, card-based Kootaj list with status tabs, search by Kootaj / warehouse receipt, Excel upload merge with conflict review, Excel export, and print/PDF pages. Full RBAC / AI still deferred.
+
+## Upload Merge (UI) — separate from File2 SKIP
+
+The dashboard upload path (`buildMergeReportFromBuffer` / `applyMergeDecisions` in `@metrookeh/import-core`) is **not** the File2 CLI SKIP writer.
+
+| Path | Existing Kootaj behavior |
+|------|--------------------------|
+| File2 CLI / `writeFile2Import` | **SKIP** entire group (invariant unchanged) |
+| UI Upload Merge | Compare parent fields → **FILL** empty, **CONFLICT** when both differ → user chooses KEEP / TAKE / SKIP; then audit |
+
+Draft reports persist in `merge_drafts` until the user confirms. Letter attach still never creates Kootaj; letter conflicts go to `review_items`.
+
+Unique match key remains `normalized_kootaj` (Excel column `کوتاژ` / `شماره کوتاژ` / File2 license columns).
+
 

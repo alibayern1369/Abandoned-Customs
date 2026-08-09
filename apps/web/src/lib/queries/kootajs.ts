@@ -20,15 +20,100 @@ import {
 } from '@metrookeh/db';
 import { getDb } from '../db';
 
+export const KOOTAJ_TABS = [
+  'all',
+  'complete',
+  'with_letter',
+  'without_letter',
+  'exited',
+  'not_exited',
+  'incomplete',
+  'needs_review',
+] as const;
+
+export type KootajTab = (typeof KOOTAJ_TABS)[number];
+
 export type KootajListFilters = {
   q?: string;
+  tab?: KootajTab;
   origin?: 'FILE1' | 'FILE2';
-  letter?: 'with' | 'without';
-  exit?: 'exited' | 'not_exited';
-  needsReview?: boolean;
   page?: number;
   pageSize?: number;
 };
+
+/** Key parent fields used for ناقص / تکمیل‌شده classification. */
+const incompleteSql = sql`(
+  ${kootajs.ownerName} is null or btrim(${kootajs.ownerName}) = ''
+  or ${kootajs.goodsStatusText} is null or btrim(${kootajs.goodsStatusText}) = ''
+  or ${kootajs.exitText} is null or btrim(${kootajs.exitText}) = ''
+  or ${letters.id} is null
+)`;
+
+const completeSql = sql`(
+  ${kootajs.ownerName} is not null and btrim(${kootajs.ownerName}) <> ''
+  and ${kootajs.goodsStatusText} is not null and btrim(${kootajs.goodsStatusText}) <> ''
+  and ${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> ''
+  and ${letters.id} is not null
+)`;
+
+const exitedSql = sql`${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> ''`;
+const notExitedSql = sql`${kootajs.exitText} is null or btrim(${kootajs.exitText}) = ''`;
+
+function openReviewExists(): SQL {
+  return exists(
+    getDb()
+      .select({ id: reviewItems.id })
+      .from(reviewItems)
+      .where(and(eq(reviewItems.kootajId, kootajs.id), eq(reviewItems.status, 'OPEN'))),
+  );
+}
+
+function warehouseReceiptExists(pattern: string): SQL {
+  return exists(
+    getDb()
+      .select({ id: kootajItems.id })
+      .from(kootajItems)
+      .where(
+        and(
+          eq(kootajItems.kootajId, kootajs.id),
+          or(
+            ilike(kootajItems.warehouseReceiptNo, pattern),
+            ilike(kootajItems.eWarehouseReceiptNo, pattern),
+          ),
+        ),
+      ),
+  );
+}
+
+function applyTabFilter(tab: KootajTab | undefined, parts: SQL[]): void {
+  switch (tab) {
+    case 'with_letter':
+      parts.push(isNotNull(letters.id));
+      break;
+    case 'without_letter':
+      parts.push(isNull(letters.id));
+      break;
+    case 'exited':
+      parts.push(exitedSql);
+      break;
+    case 'not_exited':
+      parts.push(notExitedSql);
+      break;
+    case 'needs_review':
+      parts.push(openReviewExists());
+      break;
+    case 'incomplete':
+      parts.push(incompleteSql);
+      break;
+    case 'complete':
+      parts.push(completeSql);
+      break;
+    case 'all':
+    case undefined:
+    default:
+      break;
+  }
+}
 
 function buildKootajWhere(filters: KootajListFilters): SQL | undefined {
   const parts: SQL[] = [];
@@ -37,28 +122,7 @@ function buildKootajWhere(filters: KootajListFilters): SQL | undefined {
     parts.push(eq(kootajs.sourceOrigin, filters.origin));
   }
 
-  if (filters.letter === 'with') {
-    parts.push(isNotNull(letters.id));
-  } else if (filters.letter === 'without') {
-    parts.push(isNull(letters.id));
-  }
-
-  if (filters.exit === 'exited') {
-    parts.push(sql`${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> ''`);
-  } else if (filters.exit === 'not_exited') {
-    parts.push(sql`${kootajs.exitText} is null or btrim(${kootajs.exitText}) = ''`);
-  }
-
-  if (filters.needsReview) {
-    parts.push(
-      exists(
-        getDb()
-          .select({ id: reviewItems.id })
-          .from(reviewItems)
-          .where(and(eq(reviewItems.kootajId, kootajs.id), eq(reviewItems.status, 'OPEN'))),
-      ),
-    );
-  }
+  applyTabFilter(filters.tab, parts);
 
   const q = filters.q?.trim();
   if (q) {
@@ -69,6 +133,7 @@ function buildKootajWhere(filters: KootajListFilters): SQL | undefined {
       ilike(kootajs.ownerName, pattern),
       ilike(kootajs.orderRegistrationNo, pattern),
       ilike(letters.letterNumber, pattern),
+      warehouseReceiptExists(pattern),
     );
     if (search) parts.push(search);
   }
@@ -76,6 +141,13 @@ function buildKootajWhere(filters: KootajListFilters): SQL | undefined {
   if (parts.length === 0) return undefined;
   if (parts.length === 1) return parts[0];
   return and(...parts);
+}
+
+export function parseKootajTab(value: string | undefined): KootajTab {
+  if (value && (KOOTAJ_TABS as readonly string[]).includes(value)) {
+    return value as KootajTab;
+  }
+  return 'all';
 }
 
 export async function getDashboardStats() {
@@ -113,10 +185,49 @@ export async function getDashboardStats() {
   };
 }
 
+export type TabCounts = Record<KootajTab, number>;
+
+export async function getTabCounts(q?: string): Promise<TabCounts> {
+  const db = getDb();
+  const baseFilters: KootajListFilters = { q: q || undefined };
+
+  const counts = {} as TabCounts;
+  await Promise.all(
+    KOOTAJ_TABS.map(async (tab) => {
+      const where = buildKootajWhere({ ...baseFilters, tab });
+      const query = db
+        .select({ value: count(kootajs.id) })
+        .from(kootajs)
+        .leftJoin(letters, eq(letters.kootajId, kootajs.id));
+      const [row] = where ? await query.where(where) : await query;
+      counts[tab] = Number(row?.value ?? 0);
+    }),
+  );
+  return counts;
+}
+
+export type KootajListRow = {
+  id: string;
+  normalizedKootaj: string;
+  displayKootaj: string | null;
+  sourceOrigin: 'FILE1' | 'FILE2';
+  ownerName: string | null;
+  orderRegistrationNo: string | null;
+  goodsStatusText: string | null;
+  exitText: string | null;
+  hasParentFieldConflict: boolean;
+  createdAt: Date;
+  letterNumber: string | null;
+  letterDate: string | null;
+  openReviewCount: number;
+  isIncomplete: boolean;
+  isComplete: boolean;
+};
+
 export async function listKootajs(filters: KootajListFilters = {}) {
   const db = getDb();
   const page = Math.max(1, filters.page ?? 1);
-  const pageSize = Math.min(100, Math.max(10, filters.pageSize ?? 25));
+  const pageSize = Math.min(100, Math.max(10, filters.pageSize ?? 24));
   const offset = (page - 1) * pageSize;
   const where = buildKootajWhere(filters);
 
@@ -138,6 +249,8 @@ export async function listKootajs(filters: KootajListFilters = {}) {
         select count(*)::int from review_items ri
         where ri.kootaj_id = ${kootajs.id} and ri.status = 'OPEN'
       )`,
+      isIncomplete: sql<boolean>`${incompleteSql}`,
+      isComplete: sql<boolean>`${completeSql}`,
     })
     .from(kootajs)
     .leftJoin(letters, eq(letters.kootajId, kootajs.id));
@@ -154,11 +267,17 @@ export async function listKootajs(filters: KootajListFilters = {}) {
   const [totalRow] = where ? await countQuery.where(where) : await countQuery;
 
   return {
-    rows,
+    rows: rows as KootajListRow[],
     total: Number(totalRow?.value ?? 0),
     page,
     pageSize,
   };
+}
+
+/** All matching rows for export (capped). */
+export async function listKootajsForExport(filters: KootajListFilters = {}, limit = 5000) {
+  const result = await listKootajs({ ...filters, page: 1, pageSize: Math.min(limit, 5000) });
+  return result;
 }
 
 export async function getKootajDetail(id: string) {
@@ -179,5 +298,12 @@ export async function getKootajDetail(id: string) {
     .where(eq(reviewItems.kootajId, id))
     .orderBy(desc(reviewItems.createdAt));
 
-  return { parent, letter: letter ?? null, items, reviews };
+  const isIncomplete =
+    !parent.ownerName?.trim() ||
+    !parent.goodsStatusText?.trim() ||
+    !parent.exitText?.trim() ||
+    !letter;
+  const isComplete = !isIncomplete;
+
+  return { parent, letter: letter ?? null, items, reviews, isIncomplete, isComplete };
 }
