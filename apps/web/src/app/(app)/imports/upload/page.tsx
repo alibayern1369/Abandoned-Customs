@@ -6,7 +6,7 @@ export default function UploadPage() {
     <div>
       <PageHeader
         title="آپلود اکسل"
-        description="فایل را بارگذاری کنید؛ سیستم بر اساس ستون کوتاژ رکوردها را ایجاد یا تکمیل می‌کند و تداخل‌ها را برای تأیید نشان می‌دهد."
+        description="فایل را بارگذاری کنید؛ بدون تداخل، رکوردها بلافاصله ذخیره می‌شوند. در صورت تداخل فیلدی، صفحه تأیید می‌آید."
       />
       <UploadDropzone />
       <div className="mt-6 rounded-2xl border border-line bg-elevated/50 p-4 text-sm text-muted">

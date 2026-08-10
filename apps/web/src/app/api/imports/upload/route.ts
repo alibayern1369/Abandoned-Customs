@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import {
+  applyMergeDecisions,
   buildMergeReportFromBuffer,
   createMergeDraft,
 } from '@metrookeh/import-core';
@@ -47,7 +48,32 @@ export async function POST(request: Request) {
       createdBy: user.id,
     });
 
-    return NextResponse.json({ draftId, summary: report.summary, fileType: report.fileType });
+    // بدون تداخل فیلدی: بلافاصله در دیتابیس ذخیره می‌شود
+    if (report.summary.conflictFields === 0) {
+      const applied = await applyMergeDecisions({
+        db,
+        draftId,
+        fieldDecisions: [],
+        createdBy: user.id,
+      });
+      return NextResponse.json({
+        draftId,
+        batchId: applied.batchId,
+        applied: true,
+        created: applied.created,
+        updated: applied.updated,
+        itemsCreated: applied.itemsCreated,
+        summary: report.summary,
+        fileType: report.fileType,
+      });
+    }
+
+    return NextResponse.json({
+      draftId,
+      applied: false,
+      summary: report.summary,
+      fileType: report.fileType,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'خطای ناشناخته در پردازش فایل';
     return NextResponse.json({ error: message }, { status: 500 });

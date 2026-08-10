@@ -4,11 +4,16 @@ import { Badge, EmptyState, PageHeader } from '@/components/ui';
 import {
   faNumber,
   formatDateTime,
+  formatRial,
+  exitDisplay,
+  isExited,
   reviewStatusLabel,
   reviewTypeLabel,
   sourceOriginLabel,
 } from '@/lib/labels';
 import { getKootajDetail } from '@/lib/queries/kootajs';
+
+const DEFAULT_OWNER = 'سازمان اموال تملیکی';
 
 export default async function KootajDetailPage({
   params,
@@ -20,13 +25,15 @@ export default async function KootajDetailPage({
   if (!detail) notFound();
 
   const { parent, letter, items, reviews, isIncomplete, isComplete } = detail;
+  const hasExit = isExited(parent.exitText);
+  const owner = parent.ownerName?.trim() || DEFAULT_OWNER;
 
   const fields: Array<[string, string | null | undefined]> = [
     ['کوتاژ نرمال', parent.normalizedKootaj],
     ['نمایش', parent.displayKootaj],
     ['منبع', sourceOriginLabel(parent.sourceOrigin)],
     ['تاریخ کوتاژ', parent.kootajDate],
-    ['مالک', parent.ownerName],
+    ['مالک', owner],
     ['کد مالک', parent.ownerCode],
     ['حق‌العمل‌کار', parent.brokerName],
     ['کد حق‌العمل‌کار', parent.brokerCode],
@@ -37,15 +44,18 @@ export default async function KootajDetailPage({
     ['ثبت سفارش', parent.orderRegistrationNo],
     ['وضعیت کالا', parent.goodsStatusText],
     ['اعلام به تملیکی', parent.announcedToTamlikText],
-    ['خروج', parent.exitText],
+    ['خروج', exitDisplay(parent.exitText)],
     ['کشور مبدأ', parent.originCountry],
     ['کشور صادرکننده', parent.exportCountry],
     ['کشور طرف معامله', parent.tradeCountry],
-    ['ارزش ریالی', parent.rialValue],
-    ['ارزش ارزی', parent.fxValue ? `${parent.fxValue} ${parent.fxCurrency ?? ''}`.trim() : null],
-    ['نرخ ارز', parent.fxRate],
-    ['حقوق استنباطی', parent.customsInferredDuty],
-    ['واریزی تملیکی', parent.tamlikDeposit],
+    ['ارزش ریالی (ریال)', formatRial(parent.rialValue)],
+    [
+      'ارزش ارزی',
+      parent.fxValue ? `${formatRial(parent.fxValue)} ${parent.fxCurrency ?? ''}`.trim() : null,
+    ],
+    ['نرخ ارز', parent.fxRate ? formatRial(parent.fxRate) : null],
+    ['حقوق استنباطی (ریال)', formatRial(parent.customsInferredDuty)],
+    ['واریزی تملیکی (ریال)', formatRial(parent.tamlikDeposit)],
   ];
 
   return (
@@ -69,7 +79,7 @@ export default async function KootajDetailPage({
         {isComplete ? <Badge tone="ok">تکمیل‌شده</Badge> : null}
         {isIncomplete ? <Badge tone="warn">ناقص</Badge> : null}
         {letter ? <Badge tone="ok">با نامه</Badge> : <Badge>بدون نامه</Badge>}
-        {parent.exitText?.trim() ? <Badge tone="ok">خارج‌شده</Badge> : <Badge tone="warn">خارج‌نشده</Badge>}
+        {hasExit ? <Badge tone="ok">خارج‌شده</Badge> : <Badge tone="warn">خارج‌نشده</Badge>}
       </div>
 
       <PageHeader
@@ -87,7 +97,7 @@ export default async function KootajDetailPage({
           {fields.map(([label, value]) => (
             <div key={label} className="rounded-xl bg-surface/60 px-3 py-2.5">
               <p className="text-xs text-muted">{label}</p>
-              <p className="mt-0.5 text-sm font-medium">{value || '—'}</p>
+              <p className="mt-0.5 text-sm font-medium tabular-nums">{value || '—'}</p>
             </div>
           ))}
         </div>

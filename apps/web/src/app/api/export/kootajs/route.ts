@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import XLSX from 'xlsx';
+import { isExited } from '@metrookeh/domain';
 import { getSessionUser } from '@/lib/auth';
 import {
   listKootajsForExport,
@@ -23,13 +24,15 @@ export async function GET(request: Request) {
   const sheetRows = rows.map((row) => ({
     کوتاژ: row.displayKootaj || row.normalizedKootaj,
     'کوتاژ نرمال': row.normalizedKootaj,
+    'قبض انبار': row.warehouseReceipts ?? '',
     منبع: row.sourceOrigin,
-    مالک: row.ownerName ?? '',
+    مالک: row.ownerName?.trim() || 'سازمان اموال تملیکی',
     'ثبت سفارش': row.orderRegistrationNo ?? '',
     نامه: row.letterNumber ?? '',
     'تاریخ نامه': row.letterDate ?? '',
     'وضعیت کالا': row.goodsStatusText ?? '',
-    خروج: row.exitText ?? '',
+    خروج: row.exitText?.trim() || 'خارج نشده',
+    'خارج‌شده': isExited(row.exitText) ? 'بله' : 'خیر',
     ناقص: row.isIncomplete ? 'بله' : 'خیر',
     تکمیل: row.isComplete ? 'بله' : 'خیر',
     'بررسی باز': Number(row.openReviewCount),

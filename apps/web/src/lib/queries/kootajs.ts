@@ -41,23 +41,35 @@ export type KootajListFilters = {
   pageSize?: number;
 };
 
-/** Key parent fields used for ناقص / تکمیل‌شده classification. */
+/** Key parent fields used for ناقص / تکمیل‌شده classification.
+ * Exit date is NOT required for complete — empty exit means خارج‌نشده (valid).
+ * File1 (متروکه) owner defaults to سازمان اموال تملیکی when DB column is empty.
+ */
 const incompleteSql = sql`(
-  ${kootajs.ownerName} is null or btrim(${kootajs.ownerName}) = ''
+  (
+    ${kootajs.sourceOrigin} <> 'FILE1'
+    and (${kootajs.ownerName} is null or btrim(${kootajs.ownerName}) = '')
+  )
   or ${kootajs.goodsStatusText} is null or btrim(${kootajs.goodsStatusText}) = ''
-  or ${kootajs.exitText} is null or btrim(${kootajs.exitText}) = ''
   or ${letters.id} is null
 )`;
 
 const completeSql = sql`(
-  ${kootajs.ownerName} is not null and btrim(${kootajs.ownerName}) <> ''
+  (
+    ${kootajs.sourceOrigin} = 'FILE1'
+    or (${kootajs.ownerName} is not null and btrim(${kootajs.ownerName}) <> '')
+  )
   and ${kootajs.goodsStatusText} is not null and btrim(${kootajs.goodsStatusText}) <> ''
-  and ${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> ''
   and ${letters.id} is not null
 )`;
 
-const exitedSql = sql`${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> ''`;
-const notExitedSql = sql`${kootajs.exitText} is null or btrim(${kootajs.exitText}) = ''`;
+/** File1 exit column: date/ref → خارج‌شده؛ «خارج نشده است» یا خالی → خارج‌نشده */
+const exitedSql = sql`${kootajs.exitText} is not null
+  and btrim(${kootajs.exitText}) <> ''
+  and ${kootajs.exitText} not ilike '%خارج نشده%'`;
+const notExitedSql = sql`${kootajs.exitText} is null
+  or btrim(${kootajs.exitText}) = ''
+  or ${kootajs.exitText} ilike '%خارج نشده%'`;
 
 function openReviewExists(): SQL {
   return exists(
@@ -158,7 +170,7 @@ export async function getDashboardStats() {
       totalKootajs: count(kootajs.id),
       withLetter: sql<number>`count(${letters.id})::int`,
       file2: sql<number>`count(*) filter (where ${kootajs.sourceOrigin} = 'FILE2')::int`,
-      exited: sql<number>`count(*) filter (where ${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> '')::int`,
+      exited: sql<number>`count(*) filter (where ${kootajs.exitText} is not null and btrim(${kootajs.exitText}) <> '' and ${kootajs.exitText} not ilike '%خارج نشده%')::int`,
     })
     .from(kootajs)
     .leftJoin(letters, eq(letters.kootajId, kootajs.id));
@@ -219,6 +231,7 @@ export type KootajListRow = {
   createdAt: Date;
   letterNumber: string | null;
   letterDate: string | null;
+  warehouseReceipts: string | null;
   openReviewCount: number;
   isIncomplete: boolean;
   isComplete: boolean;
@@ -245,6 +258,19 @@ export async function listKootajs(filters: KootajListFilters = {}) {
       createdAt: kootajs.createdAt,
       letterNumber: letters.letterNumber,
       letterDate: letters.letterDate,
+      warehouseReceipts: sql<string | null>`(
+        select string_agg(distinct receipt, '، ' order by receipt)
+        from (
+          select nullif(btrim(warehouse_receipt_no), '') as receipt
+          from kootaj_items
+          where kootaj_id = ${kootajs.id}
+          union
+          select nullif(btrim(e_warehouse_receipt_no), '') as receipt
+          from kootaj_items
+          where kootaj_id = ${kootajs.id}
+        ) receipts
+        where receipt is not null
+      )`,
       openReviewCount: sql<number>`(
         select count(*)::int from review_items ri
         where ri.kootaj_id = ${kootajs.id} and ri.status = 'OPEN'
@@ -298,11 +324,9 @@ export async function getKootajDetail(id: string) {
     .where(eq(reviewItems.kootajId, id))
     .orderBy(desc(reviewItems.createdAt));
 
-  const isIncomplete =
-    !parent.ownerName?.trim() ||
-    !parent.goodsStatusText?.trim() ||
-    !parent.exitText?.trim() ||
-    !letter;
+  const hasOwner =
+    Boolean(parent.ownerName?.trim()) || parent.sourceOrigin === 'FILE1';
+  const isIncomplete = !hasOwner || !parent.goodsStatusText?.trim() || !letter;
   const isComplete = !isIncomplete;
 
   return { parent, letter: letter ?? null, items, reviews, isIncomplete, isComplete };

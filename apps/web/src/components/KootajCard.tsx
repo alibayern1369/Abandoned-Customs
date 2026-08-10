@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui';
-import { faNumber, sourceOriginLabel } from '@/lib/labels';
+import { exitDisplay, faNumber, isExited, sourceOriginLabel } from '@/lib/labels';
 import type { KootajListRow } from '@/lib/queries/kootajs';
+
+const DEFAULT_OWNER = 'سازمان اموال تملیکی';
 
 export function KootajCard({ row }: { row: KootajListRow }) {
   const title = row.displayKootaj || row.normalizedKootaj;
-  const hasExit = Boolean(row.exitText?.trim());
+  const hasExit = isExited(row.exitText);
   const openReviews = Number(row.openReviewCount) > 0;
+  const owner = row.ownerName?.trim() || DEFAULT_OWNER;
+  const receipts = row.warehouseReceipts?.trim() || '—';
 
   return (
     <Link
@@ -15,12 +19,15 @@ export function KootajCard({ row }: { row: KootajListRow }) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
+          <p className="text-xs text-muted">کوتاژ</p>
           <p className="truncate text-lg font-bold tracking-tight text-ink group-hover:text-accent">
             {title}
           </p>
-          <p className="mt-0.5 text-xs tabular-nums text-muted">{row.normalizedKootaj}</p>
+          <p className="mt-2 text-xs text-muted">قبض انبار</p>
+          <p className="mt-0.5 truncate text-sm tabular-nums font-medium text-ink">{receipts}</p>
         </div>
         <div className="flex shrink-0 flex-wrap justify-end gap-1">
+          {hasExit ? <Badge tone="ok">خارج‌شده</Badge> : <Badge tone="warn">خارج‌نشده</Badge>}
           {row.isComplete ? <Badge tone="ok">تکمیل</Badge> : null}
           {row.isIncomplete ? <Badge tone="warn">ناقص</Badge> : null}
           {openReviews ? <Badge tone="danger">بررسی</Badge> : null}
@@ -30,7 +37,7 @@ export function KootajCard({ row }: { row: KootajListRow }) {
       <dl className="mt-4 grid gap-2 text-sm">
         <div className="flex justify-between gap-3">
           <dt className="text-muted">مالک</dt>
-          <dd className="truncate font-medium">{row.ownerName || '—'}</dd>
+          <dd className="truncate font-medium">{owner}</dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted">نامه</dt>
@@ -38,7 +45,7 @@ export function KootajCard({ row }: { row: KootajListRow }) {
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted">خروج</dt>
-          <dd className="truncate font-medium">{hasExit ? row.exitText : 'خارج نشده'}</dd>
+          <dd className="truncate font-medium">{exitDisplay(row.exitText)}</dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted">وضعیت کالا</dt>

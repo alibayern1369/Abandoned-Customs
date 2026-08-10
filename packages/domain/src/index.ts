@@ -45,8 +45,18 @@ export interface LetterAttachDecision {
 
 /**
  * File3 letter rule (domain-level): never silent-replace a different letter.
- * Derived EXITED/NOT_EXITED classification is intentionally NOT defined here.
+ *
+ * File1 column «تاریخ خروج کالا  از گمرک توسط اموال تملیکی»:
+ * - empty / «…خارج نشده است» → NOT_EXITED
+ * - any other non-empty value (date/ref) → EXITED
  */
+export function isExited(exitText: string | null | undefined): boolean {
+  const text = (exitText ?? '').trim();
+  if (!text) return false;
+  if (text.includes('خارج نشده')) return false;
+  return true;
+}
+
 export function decideLetterAttach(input: {
   kootajExists: boolean;
   hasValidLetterNumber: boolean;
