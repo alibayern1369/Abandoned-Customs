@@ -28,7 +28,7 @@ export function StatLink({
   return (
     <Link
       href={href}
-      className="glass group block rounded-[1.15rem] px-5 py-4 transition hover:-translate-y-0.5 hover:border-accent/25 hover:shadow-[0_12px_30px_rgba(26,34,31,0.08)]"
+      className="glass group block rounded-[1.35rem] px-5 py-5 transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(35,55,70,0.14)]"
     >
       <p className="text-sm text-muted transition group-hover:text-ink/70">{label}</p>
       <p className="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-accent">{faNumber(value)}</p>

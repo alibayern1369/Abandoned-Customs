@@ -11,7 +11,7 @@ export function KootajCard({ row }: { row: KootajListRow }) {
   return (
     <Link
       href={`/kootajs/${row.id}`}
-      className="glass group flex flex-col rounded-[1.25rem] p-5 transition hover:-translate-y-0.5 hover:border-accent/25 hover:shadow-[0_14px_32px_rgba(26,34,31,0.09)]"
+      className="glass group flex flex-col rounded-[1.4rem] p-5 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(35,55,70,0.14)]"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
