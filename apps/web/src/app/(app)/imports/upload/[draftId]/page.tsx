@@ -18,8 +18,8 @@ export default async function MergeDraftPage({
   return (
     <div>
       <PageHeader
-        title="بررسی ادغام اکسل"
-        description={`فایل: ${draft.fileName} · نوع: ${report.fileType}`}
+        title="خلاصه ادغام اکسل"
+        description={`فایل: ${draft.fileName} · نوع: ${report.fileType} · اکسل جدید برای فیلدهای متفاوت مرجع است`}
       />
       {draft.status !== 'AWAITING_RESOLUTION' ? (
         <p className="rounded-xl border border-blue-100 bg-accent-soft px-4 py-3 text-sm text-muted">

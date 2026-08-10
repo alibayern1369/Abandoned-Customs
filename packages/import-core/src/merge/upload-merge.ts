@@ -1,5 +1,5 @@
 /**
- * Upload Merge path (UI) — fill empty fields / conflict review.
+ * Upload Merge path (UI) — fill empty fields; differing values take Excel as source of truth.
  * Separate from File2 CLI SKIP behavior.
  */
 
@@ -219,7 +219,8 @@ function buildFieldDiffs(
       existing: str(existingVal),
       incoming: str(incomingVal),
       action,
-      suggested: action === 'FILL' ? 'TAKE' : 'KEEP',
+      // Excel is source of truth: fill empties and overwrite differing values.
+      suggested: 'TAKE',
     });
   }
   return diffs;
@@ -352,14 +353,14 @@ function buildEntriesFromFile1(
 function buildEntriesFromFile2(
   workbook: Workbook,
   existingMap: Map<string, typeof kootajs.$inferSelect>,
+  /** Precomputed records from a single processFile2 pass (avoids re-parsing large workbooks). */
+  precomputedRecords?: KootajRecord[],
 ): MergeKootajEntry[] {
   // Empty set → treat all as "new" for analysis grouping; we decide CREATE/UPDATE ourselves.
-  const analysis = processFile2(workbook, new Set());
+  const records: KootajRecord[] =
+    precomputedRecords ?? processFile2(workbook, new Set()).new;
   const { groups } = collectFile2PhysicalGroups(workbook);
   const entries: MergeKootajEntry[] = [];
-
-  // processFile2 with empty set puts everything in `new`
-  const records: KootajRecord[] = analysis.new;
 
   for (const record of records) {
     const mapped = mapFile2Kootaj(record);
@@ -604,17 +605,20 @@ export async function buildMergeReportFromBuffer(options: {
   }
 
   let probeKeys: string[] = [];
+  let file2Records: KootajRecord[] | null = null;
   if (fileType === 'FILE1') {
     probeKeys = processFile1(workbook).kootajs.map((k) => k.normalized_kootaj);
   } else {
-    probeKeys = processFile2(workbook, new Set()).new.map((k) => k.normalized_kootaj);
+    // One File2 pass — reuse for probe keys and entry building (avoids double parse on large files).
+    file2Records = processFile2(workbook, new Set()).new;
+    probeKeys = file2Records.map((k) => k.normalized_kootaj);
   }
 
   const existingMap = await loadExistingByNormalized(options.db, probeKeys);
   const entries =
     fileType === 'FILE1'
       ? buildEntriesFromFile1(workbook, existingMap)
-      : buildEntriesFromFile2(workbook, existingMap);
+      : buildEntriesFromFile2(workbook, existingMap, file2Records ?? undefined);
 
   let letterEntries: MergeLetterEntry[] = [];
   if (fileType === 'FILE1') {
@@ -761,7 +765,13 @@ export async function applyMergeDecisions(options: {
   fieldDecisions: FieldDecision[];
   letterDecisions?: LetterDecision[];
   createdBy?: string | null;
-}): Promise<{ batchId: string; created: number; updated: number; itemsCreated: number }> {
+}): Promise<{
+  batchId: string;
+  created: number;
+  updated: number;
+  itemsCreated: number;
+  updatedKootajs: string[];
+}> {
   const draft = await getMergeDraft(options.db, options.draftId);
   if (!draft) throw new Error('پیش‌نویس ادغام یافت نشد');
   if (draft.status !== 'AWAITING_RESOLUTION') throw new Error('این پیش‌نویس قبلاً اعمال یا لغو شده است');
@@ -793,6 +803,7 @@ export async function applyMergeDecisions(options: {
     let updated = 0;
     let itemsCreated = 0;
     let reviewCreated = 0;
+    const updatedKootajs: string[] = [];
     const createdIdByKey = new Map<string, string>();
 
     for (const entry of report.kootajs) {
@@ -836,6 +847,7 @@ export async function applyMergeDecisions(options: {
           .set({ ...patch, updatedAt: new Date() })
           .where(eq(kootajs.id, entry.existingId));
         updated += 1;
+        updatedKootajs.push(entry.displayKootaj || entry.normalizedKootaj);
 
         await tx.insert(auditLogs).values({
           actorUserId: options.createdBy ?? null,
@@ -943,7 +955,7 @@ export async function applyMergeDecisions(options: {
       })
       .where(eq(mergeDrafts.id, options.draftId));
 
-    return { batchId, created, updated, itemsCreated };
+    return { batchId, created, updated, itemsCreated, updatedKootajs };
   });
 }
 

@@ -63,7 +63,8 @@ export function UploadDropzone() {
       >
         <p className="text-lg font-semibold text-ink">فایل اکسل را اینجا رها کنید</p>
         <p className="mt-2 max-w-md text-sm text-muted">
-          ستون یکتا باید «کوتاژ» باشد. اطلاعات ناقص با آپلودهای بعدی و تأیید تداخل‌ها کامل می‌شود.
+          ستون یکتا باید «کوتاژ» باشد. در آپلود بعدی، اکسل جدید مرجع است و کوتاژهای تغییرکرده به‌روز
+          می‌شوند.
         </p>
         <input
           type="file"

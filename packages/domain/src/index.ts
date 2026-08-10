@@ -100,6 +100,7 @@ function normalizeFieldValue(value: string | null | undefined): string {
 /**
  * Compare one parent field for upload merge.
  * EMPTY DB + incoming → FILL; both equal → SAME; both non-empty and different → CONFLICT.
+ * UI upload path treats CONFLICT as Excel-wins (auto TAKE); letters stay separate.
  */
 export function decideFieldMerge(
   existing: string | null | undefined,
