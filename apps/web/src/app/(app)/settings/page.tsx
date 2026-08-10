@@ -7,16 +7,13 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="تنظیمات حساب"
-        description="تغییر رمز عبور ورود به سامانه"
-      />
-      <div className="mb-6 rounded-xl border border-line bg-elevated/50 px-4 py-3 text-sm">
+      <PageHeader title="تنظیمات حساب" description="تغییر رمز عبور ورود به سامانه" />
+      <div className="glass mb-6 max-w-md rounded-[1.15rem] px-5 py-4 text-sm">
         <p>
           <span className="text-muted">نام کاربری: </span>
           <span className="font-medium">{user?.username}</span>
         </p>
-        <p className="mt-1">
+        <p className="mt-1.5">
           <span className="text-muted">نام نمایشی: </span>
           <span className="font-medium">{user?.displayName}</span>
         </p>

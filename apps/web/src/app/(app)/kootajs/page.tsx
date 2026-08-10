@@ -46,15 +46,13 @@ export default async function KootajsPage({ searchParams }: { searchParams: Sear
         <ExportButtons tab={tab} q={q || undefined} />
       </div>
 
-      <div className="mb-5 rounded-2xl border border-line bg-elevated/60 p-4 sm:p-5">
+      <div className="glass mb-5 rounded-[1.25rem] p-4 sm:p-5">
         <SearchBar defaultValue={q} tab={tab} />
       </div>
 
       <StatusTabs active={tab} counts={counts} q={q || undefined} />
 
-      <p className="mb-4 text-sm text-muted">
-        {faNumber(result.total)} مورد در این دسته
-      </p>
+      <p className="mb-4 text-sm text-muted">{faNumber(result.total)} مورد در این دسته</p>
 
       {result.rows.length === 0 ? (
         <EmptyState message="کوتاژی با این فیلتر پیدا نشد." />

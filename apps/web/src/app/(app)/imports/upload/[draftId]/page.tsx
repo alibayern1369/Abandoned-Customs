@@ -22,7 +22,7 @@ export default async function MergeDraftPage({
         description={`فایل: ${draft.fileName} · نوع: ${report.fileType}`}
       />
       {draft.status !== 'AWAITING_RESOLUTION' ? (
-        <p className="rounded-xl border border-line bg-elevated px-4 py-3 text-sm text-muted">
+        <p className="glass rounded-[1.1rem] px-4 py-3.5 text-sm text-muted">
           این پیش‌نویس دیگر در انتظار تأیید نیست (وضعیت: {draft.status}).
         </p>
       ) : (

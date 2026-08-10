@@ -39,14 +39,10 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
         description="resolve فقط وضعیت صف را می‌بندد و نامه/کوتاژ را خودکار تغییر نمی‌دهد."
       />
 
-      <form method="get" className="mb-6 flex flex-wrap gap-3">
+      <form method="get" className="glass mb-6 flex flex-wrap gap-3 rounded-[1.2rem] p-4 sm:p-5">
         <label>
-          <span className="mb-1 block text-xs text-muted">وضعیت</span>
-          <select
-            name="status"
-            defaultValue={status ?? ''}
-            className="rounded-md border border-line bg-elevated px-3 py-2 text-sm"
-          >
+          <span className="mb-1.5 block text-xs text-muted">وضعیت</span>
+          <select name="status" defaultValue={status ?? ''} className="ui-select">
             <option value="">همه</option>
             {REVIEW_ITEM_STATUSES.map((s) => (
               <option key={s} value={s}>
@@ -56,12 +52,8 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
           </select>
         </label>
         <label>
-          <span className="mb-1 block text-xs text-muted">نوع</span>
-          <select
-            name="type"
-            defaultValue={type ?? ''}
-            className="rounded-md border border-line bg-elevated px-3 py-2 text-sm"
-          >
+          <span className="mb-1.5 block text-xs text-muted">نوع</span>
+          <select name="type" defaultValue={type ?? ''} className="ui-select">
             <option value="">همه</option>
             {REVIEW_ITEM_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -71,10 +63,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
           </select>
         </label>
         <div className="flex items-end">
-          <button
-            type="submit"
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-          >
+          <button type="submit" className="ui-btn ui-btn-primary">
             فیلتر
           </button>
         </div>
@@ -83,9 +72,9 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
       {result.rows.length === 0 ? (
         <EmptyState message="موردی در صف بررسی نیست." />
       ) : (
-        <ul className="space-y-5">
+        <ul className="space-y-4">
           {result.rows.map((row) => (
-            <li key={row.id} className="border-b border-line pb-5">
+            <li key={row.id} className="glass rounded-[1.2rem] p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
                   tone={
@@ -97,7 +86,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                 <span className="font-medium">{reviewTypeLabel(row.type)}</span>
                 <span className="text-xs text-muted">{formatDateTime(row.createdAt)}</span>
               </div>
-              <div className="mt-2 grid gap-1 text-sm sm:grid-cols-2">
+              <div className="mt-3 grid gap-1.5 text-sm sm:grid-cols-2">
                 <p>
                   <span className="text-muted">کوتاژ نرمال: </span>
                   {row.normalizedKootaj || '—'}
@@ -105,7 +94,10 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                 <p>
                   <span className="text-muted">شناسه کوتاژ: </span>
                   {row.kootajId ? (
-                    <Link href={`/kootajs/${row.kootajId}`} className="text-accent hover:underline">
+                    <Link
+                      href={`/kootajs/${row.kootajId}`}
+                      className="font-medium text-accent underline-offset-4 hover:underline"
+                    >
                       مشاهده
                     </Link>
                   ) : (
@@ -114,27 +106,27 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                 </p>
                 <p>
                   <span className="text-muted">batch: </span>
-                  <Link href={`/imports/${row.importBatchId}`} className="text-accent hover:underline">
+                  <Link
+                    href={`/imports/${row.importBatchId}`}
+                    className="font-medium text-accent underline-offset-4 hover:underline"
+                  >
                     {row.importBatchId.slice(0, 8)}…
                   </Link>
                 </p>
               </div>
-              <pre className="mt-3 max-h-40 overflow-auto rounded bg-elevated p-3 text-xs text-muted">
+              <pre className="mt-3 max-h-40 overflow-auto rounded-[0.9rem] bg-white/50 p-3.5 text-xs text-muted ring-1 ring-line/50">
                 {JSON.stringify(row.payload ?? {}, null, 2)}
               </pre>
               {row.status === 'OPEN' ? (
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <form action={resolveReviewAction} className="space-y-2">
                     <input type="hidden" name="id" value={row.id} />
                     <input
                       name="note"
                       placeholder="یادداشت حل (اختیاری)"
-                      className="w-full rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+                      className="ui-input"
                     />
-                    <button
-                      type="submit"
-                      className="rounded-md bg-ok px-3 py-1.5 text-sm font-medium text-white"
-                    >
+                    <button type="submit" className="ui-btn ui-btn-primary">
                       حل‌شده
                     </button>
                   </form>
@@ -143,18 +135,15 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                     <input
                       name="note"
                       placeholder="یادداشت نادیده (اختیاری)"
-                      className="w-full rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+                      className="ui-input"
                     />
-                    <button
-                      type="submit"
-                      className="rounded-md border border-line px-3 py-1.5 text-sm font-medium"
-                    >
+                    <button type="submit" className="ui-btn ui-btn-secondary">
                       نادیده گرفتن
                     </button>
                   </form>
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-muted">
+                <p className="mt-3 text-sm text-muted">
                   {row.resolutionNote || 'بدون یادداشت'} · {formatDateTime(row.resolvedAt)}
                 </p>
               )}

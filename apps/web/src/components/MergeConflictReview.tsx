@@ -70,8 +70,8 @@ export function MergeConflictReview({
       </div>
 
       {report.letters.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
-          <h3 className="mb-2 font-semibold">نامه‌ها</h3>
+        <section className="glass rounded-[1.25rem] p-5">
+          <h3 className="mb-2 font-semibold tracking-tight">نامه‌ها</h3>
           <p className="text-sm text-muted">
             الصاق: {faNumber(report.summary.lettersAttach)} · تعارض:{' '}
             {faNumber(report.summary.lettersConflict)} · بدون تطبیق:{' '}
@@ -81,20 +81,24 @@ export function MergeConflictReview({
             {report.letters
               .filter((letter) => letter.kind !== 'SKIP')
               .map((letter, idx) => (
-              <li key={idx} className="rounded-xl bg-surface/50 px-3 py-2">
-                <Badge tone={letter.kind === 'CONFLICT' ? 'warn' : letter.kind === 'UNMATCHED' ? 'danger' : 'ok'}>
-                  {letter.kind}
-                </Badge>{' '}
-                {letter.normalizedKootaj || '—'} · {letter.incoming.letterNumber} · {letter.reason}
-              </li>
-            ))}
+                <li key={idx} className="glass-inset rounded-[0.9rem] px-3.5 py-2.5">
+                  <Badge
+                    tone={
+                      letter.kind === 'CONFLICT' ? 'warn' : letter.kind === 'UNMATCHED' ? 'danger' : 'ok'
+                    }
+                  >
+                    {letter.kind}
+                  </Badge>{' '}
+                  {letter.normalizedKootaj || '—'} · {letter.incoming.letterNumber} · {letter.reason}
+                </li>
+              ))}
           </ul>
         </section>
       ) : null}
 
       {creates.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
-          <h3 className="mb-2 font-semibold">کوتاژهای جدید ({faNumber(creates.length)})</h3>
+        <section className="glass rounded-[1.25rem] p-5">
+          <h3 className="mb-2 font-semibold tracking-tight">کوتاژهای جدید ({faNumber(creates.length)})</h3>
           <div className="flex flex-wrap gap-2">
             {creates.slice(0, 40).map((c) => (
               <Badge key={c.normalizedKootaj}>{c.displayKootaj || c.normalizedKootaj}</Badge>
@@ -105,20 +109,24 @@ export function MergeConflictReview({
       ) : null}
 
       {fillOnly.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
-          <h3 className="mb-2 font-semibold">تکمیل خودکار فیلدهای خالی ({faNumber(fillOnly.length)})</h3>
+        <section className="glass rounded-[1.25rem] p-5">
+          <h3 className="mb-2 font-semibold tracking-tight">
+            تکمیل خودکار فیلدهای خالی ({faNumber(fillOnly.length)})
+          </h3>
           <p className="text-sm text-muted">به‌صورت پیش‌فرض از اکسل پر می‌شوند مگر رد کنید.</p>
         </section>
       ) : null}
 
       {conflictEntries.length === 0 && report.summary.conflictFields === 0 ? (
-        <p className="text-sm text-ok">تداخل فیلدی وجود ندارد؛ می‌توانید ادغام را تأیید کنید.</p>
+        <p className="glass-inset rounded-[1rem] px-4 py-3 text-sm text-ok">
+          تداخل فیلدی وجود ندارد؛ می‌توانید ادغام را تأیید کنید.
+        </p>
       ) : (
         <section className="space-y-4">
-          <h3 className="font-semibold">تداخل‌ها — برای هر فیلد انتخاب کنید</h3>
+          <h3 className="font-semibold tracking-tight">تداخل‌ها — برای هر فیلد انتخاب کنید</h3>
           {conflictEntries.map((entry) => (
-            <div key={entry.normalizedKootaj} className="rounded-2xl border border-line bg-elevated/80 p-4">
-              <p className="mb-3 text-base font-bold">
+            <div key={entry.normalizedKootaj} className="glass rounded-[1.25rem] p-5">
+              <p className="mb-3 text-base font-bold tracking-tight">
                 {entry.displayKootaj || entry.normalizedKootaj}
               </p>
               <div className="space-y-3">
@@ -127,7 +135,7 @@ export function MergeConflictReview({
                   .map((field) => {
                     const key = `${entry.normalizedKootaj}::${field.field}`;
                     return (
-                      <div key={key} className="rounded-xl border border-line/80 bg-surface/40 p-3">
+                      <div key={key} className="glass-inset rounded-[1rem] p-3.5">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           <span className="font-medium">{field.label}</span>
                           <Badge tone={field.action === 'CONFLICT' ? 'warn' : 'ok'}>
@@ -156,10 +164,10 @@ export function MergeConflictReview({
                               key={value}
                               type="button"
                               onClick={() => setDecisions((prev) => ({ ...prev, [key]: value }))}
-                              className={`rounded-full px-3 py-1.5 text-xs font-medium ${
+                              className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
                                 decisions[key] === value
-                                  ? 'bg-accent text-white'
-                                  : 'bg-elevated text-muted hover:bg-accent-soft'
+                                  ? 'bg-accent text-white shadow-[0_4px_12px_rgba(36,107,82,0.2)]'
+                                  : 'bg-white/60 text-muted hover:bg-white/90 hover:text-ink'
                               }`}
                             >
                               {label}
@@ -177,12 +185,7 @@ export function MergeConflictReview({
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
-      <button
-        type="button"
-        disabled={pending}
-        onClick={apply}
-        className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
-      >
+      <button type="button" disabled={pending} onClick={apply} className="ui-btn ui-btn-primary px-6">
         {pending ? 'در حال اعمال…' : 'تأیید و اعمال ادغام'}
       </button>
     </div>
@@ -199,9 +202,13 @@ function SummaryCard({
   tone?: 'warn';
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-elevated/80 px-4 py-3">
+    <div className="glass rounded-[1.15rem] px-4 py-3.5">
       <p className="text-xs text-muted">{label}</p>
-      <p className={`mt-1 text-2xl font-bold tabular-nums ${tone === 'warn' ? 'text-warn' : 'text-accent'}`}>
+      <p
+        className={`mt-1.5 text-2xl font-bold tabular-nums tracking-tight ${
+          tone === 'warn' ? 'text-warn' : 'text-accent'
+        }`}
+      >
         {faNumber(value)}
       </p>
     </div>

@@ -26,30 +26,30 @@ export default async function ImportsPage({ searchParams }: { searchParams: Sear
       {result.rows.length === 0 ? (
         <EmptyState message="هنوز batch ورودی وجود ندارد." />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[48rem] text-sm">
+        <div className="ui-table-wrap">
+          <table className="ui-table min-w-[48rem]">
             <thead>
-              <tr className="border-b border-line text-right text-muted">
-                <th className="px-2 py-2 font-medium">فایل</th>
-                <th className="px-2 py-2 font-medium">نوع</th>
-                <th className="px-2 py-2 font-medium">وضعیت</th>
-                <th className="px-2 py-2 font-medium">کل</th>
-                <th className="px-2 py-2 font-medium">ایجاد</th>
-                <th className="px-2 py-2 font-medium">رد شده</th>
-                <th className="px-2 py-2 font-medium">بررسی</th>
-                <th className="px-2 py-2 font-medium">زمان</th>
+              <tr>
+                <th>فایل</th>
+                <th>نوع</th>
+                <th>وضعیت</th>
+                <th>کل</th>
+                <th>ایجاد</th>
+                <th>رد شده</th>
+                <th>بررسی</th>
+                <th>زمان</th>
               </tr>
             </thead>
             <tbody>
               {result.rows.map((batch) => (
-                <tr key={batch.id} className="border-b border-line/70">
-                  <td className="px-2 py-3">
+                <tr key={batch.id}>
+                  <td>
                     <Link href={`/imports/${batch.id}`} className="font-medium hover:text-accent">
                       {batch.fileName}
                     </Link>
                   </td>
-                  <td className="px-2 py-3">{fileTypeLabel(batch.fileType)}</td>
-                  <td className="px-2 py-3">
+                  <td>{fileTypeLabel(batch.fileType)}</td>
+                  <td>
                     <Badge
                       tone={
                         batch.status === 'FAILED'
@@ -62,11 +62,11 @@ export default async function ImportsPage({ searchParams }: { searchParams: Sear
                       {batchStatusLabel(batch.status)}
                     </Badge>
                   </td>
-                  <td className="px-2 py-3 tabular-nums">{faNumber(batch.totalRows)}</td>
-                  <td className="px-2 py-3 tabular-nums">{faNumber(batch.createdRecords)}</td>
-                  <td className="px-2 py-3 tabular-nums">{faNumber(batch.skippedRecords)}</td>
-                  <td className="px-2 py-3 tabular-nums">{faNumber(batch.reviewRecords)}</td>
-                  <td className="px-2 py-3 text-muted">{formatDateTime(batch.importedAt)}</td>
+                  <td className="tabular-nums">{faNumber(batch.totalRows)}</td>
+                  <td className="tabular-nums">{faNumber(batch.createdRecords)}</td>
+                  <td className="tabular-nums">{faNumber(batch.skippedRecords)}</td>
+                  <td className="tabular-nums">{faNumber(batch.reviewRecords)}</td>
+                  <td className="text-muted">{formatDateTime(batch.importedAt)}</td>
                 </tr>
               ))}
             </tbody>

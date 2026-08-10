@@ -11,11 +11,7 @@ export function PrintTrigger() {
 
   return (
     <div className="mb-4 flex gap-2 print:hidden">
-      <button
-        type="button"
-        onClick={() => window.print()}
-        className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white"
-      >
+      <button type="button" onClick={() => window.print()} className="ui-btn ui-btn-primary">
         چاپ / ذخیره PDF
       </button>
     </div>

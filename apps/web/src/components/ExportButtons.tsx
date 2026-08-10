@@ -16,17 +16,10 @@ export function ExportButtons({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <a
-        href={excelHref}
-        className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-medium transition hover:border-accent hover:bg-accent-soft"
-      >
+      <a href={excelHref} className="ui-btn ui-btn-secondary">
         خروجی Excel
       </a>
-      <Link
-        href={printHref}
-        target="_blank"
-        className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-medium transition hover:border-accent hover:bg-accent-soft"
-      >
+      <Link href={printHref} target="_blank" className="ui-btn ui-btn-secondary">
         خروجی PDF / پرینت
       </Link>
     </div>

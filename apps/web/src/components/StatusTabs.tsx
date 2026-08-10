@@ -24,7 +24,7 @@ export function StatusTabs({
 }) {
   return (
     <div className="mb-6 -mx-1 overflow-x-auto pb-1">
-      <div className="flex min-w-max gap-1 px-1">
+      <div className="glass inline-flex min-w-max gap-1 rounded-[1.15rem] p-1.5">
         {TAB_META.map((tab) => {
           const params = new URLSearchParams();
           if (tab.id !== 'all') params.set('tab', tab.id);
@@ -35,10 +35,10 @@ export function StatusTabs({
             <Link
               key={tab.id}
               href={href}
-              className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
+              className={`rounded-[0.85rem] px-3.5 py-2 text-sm font-medium transition ${
                 isActive
-                  ? 'bg-accent text-white shadow-sm'
-                  : 'bg-elevated text-muted hover:bg-accent-soft hover:text-ink'
+                  ? 'bg-accent text-white shadow-[0_4px_12px_rgba(36,107,82,0.22)]'
+                  : 'text-muted hover:bg-white/55 hover:text-ink'
               }`}
             >
               {tab.label}
