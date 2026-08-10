@@ -162,7 +162,6 @@ body {
     radial-gradient(ellipse 48% 36% at 4% 104%, rgba(90, 130, 150, 0.1), transparent 52%),
     radial-gradient(ellipse 40% 28% at 50% 40%, rgba(255, 255, 255, 0.45), transparent 70%),
     linear-gradient(165deg, #f3f7f9 0%, var(--bg) 42%, #dfe8ed 100%);
-  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-sans);
   font-feature-settings: 'ss01' on, 'kern' on;
