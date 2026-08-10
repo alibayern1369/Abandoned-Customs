@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { faNumber, formatDateTime } from '@/lib/labels';
+import { exitDisplay, faNumber, formatDateTime, isExited } from '@/lib/labels';
 import {
   listKootajsForExport,
   parseKootajTab,
@@ -61,6 +61,7 @@ export default async function KootajsPrintPage({
         <thead>
           <tr className="border-b-2 border-ink text-right">
             <th className="px-2 py-2 font-semibold">کوتاژ</th>
+            <th className="px-2 py-2 font-semibold">قبض انبار</th>
             <th className="px-2 py-2 font-semibold">مالک</th>
             <th className="px-2 py-2 font-semibold">نامه</th>
             <th className="px-2 py-2 font-semibold">وضعیت کالا</th>
@@ -72,15 +73,20 @@ export default async function KootajsPrintPage({
           {rows.map((row) => (
             <tr key={row.id} className="border-b border-line align-top">
               <td className="px-2 py-2">
+                <div className="text-[10px] text-muted">کوتاژ</div>
                 <div className="font-medium">{row.displayKootaj || row.normalizedKootaj}</div>
-                <div className="text-xs text-muted tabular-nums">{row.normalizedKootaj}</div>
               </td>
-              <td className="px-2 py-2">{row.ownerName || '—'}</td>
+              <td className="px-2 py-2">
+                <div className="text-[10px] text-muted">قبض انبار</div>
+                <div className="tabular-nums">{row.warehouseReceipts || '—'}</div>
+              </td>
+              <td className="px-2 py-2">{row.ownerName?.trim() || 'سازمان اموال تملیکی'}</td>
               <td className="px-2 py-2">{row.letterNumber || '—'}</td>
               <td className="px-2 py-2">{row.goodsStatusText || '—'}</td>
-              <td className="px-2 py-2">{row.exitText || '—'}</td>
+              <td className="px-2 py-2">{exitDisplay(row.exitText)}</td>
               <td className="px-2 py-2">
                 {row.isComplete ? 'تکمیل' : row.isIncomplete ? 'ناقص' : '—'}
+                {isExited(row.exitText) ? ' · خارج‌شده' : ' · خارج‌نشده'}
               </td>
             </tr>
           ))}

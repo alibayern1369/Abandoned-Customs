@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { faNumber, formatDateTime, sourceOriginLabel } from '@/lib/labels';
+import { faNumber, formatDateTime, formatRial, exitDisplay, sourceOriginLabel } from '@/lib/labels';
 import { getKootajDetail } from '@/lib/queries/kootajs';
 import { PrintTrigger } from '@/components/PrintTrigger';
+
+const DEFAULT_OWNER = 'سازمان اموال تملیکی';
 
 export default async function KootajPrintPage({
   params,
@@ -19,7 +21,7 @@ export default async function KootajPrintPage({
     ['نرمال', parent.normalizedKootaj],
     ['منبع', sourceOriginLabel(parent.sourceOrigin)],
     ['تاریخ کوتاژ', parent.kootajDate],
-    ['مالک', parent.ownerName],
+    ['مالک', parent.ownerName?.trim() || DEFAULT_OWNER],
     ['کد مالک', parent.ownerCode],
     ['حق‌العمل‌کار', parent.brokerName],
     ['اظهارکننده', parent.declarantName],
@@ -27,10 +29,13 @@ export default async function KootajPrintPage({
     ['مرحله اظهار', parent.declarationStage],
     ['ثبت سفارش', parent.orderRegistrationNo],
     ['وضعیت کالا', parent.goodsStatusText],
-    ['خروج', parent.exitText],
+    ['خروج', exitDisplay(parent.exitText)],
     ['کشور مبدأ', parent.originCountry],
-    ['ارزش ریالی', parent.rialValue],
-    ['ارزش ارزی', parent.fxValue ? `${parent.fxValue} ${parent.fxCurrency ?? ''}`.trim() : null],
+    ['ارزش ریالی (ریال)', formatRial(parent.rialValue)],
+    [
+      'ارزش ارزی',
+      parent.fxValue ? `${formatRial(parent.fxValue)} ${parent.fxCurrency ?? ''}`.trim() : null,
+    ],
   ];
 
   return (

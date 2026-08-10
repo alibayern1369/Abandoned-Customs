@@ -4,9 +4,23 @@ import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { MergeReport } from '@metrookeh/import-core';
 import { Badge } from '@/components/ui';
-import { faNumber } from '@/lib/labels';
+import { faNumber, formatRial } from '@/lib/labels';
 
 type Resolution = 'KEEP' | 'TAKE' | 'SKIP';
+
+const MONEY_FIELDS = new Set([
+  'rialValue',
+  'fxValue',
+  'fxRate',
+  'customsInferredDuty',
+  'tamlikDeposit',
+]);
+
+function displayFieldValue(field: string, value: string | null | undefined): string {
+  if (value == null || value === '') return '—';
+  if (MONEY_FIELDS.has(field)) return formatRial(value);
+  return value;
+}
 
 export function MergeConflictReview({
   draftId,
@@ -137,11 +151,11 @@ export function MergeConflictReview({
                         <div className="grid gap-2 text-sm sm:grid-cols-2">
                           <p>
                             <span className="text-muted">فعلی: </span>
-                            {field.existing || '—'}
+                            {displayFieldValue(field.field, field.existing)}
                           </p>
                           <p>
                             <span className="text-muted">اکسل: </span>
-                            {field.incoming || '—'}
+                            {displayFieldValue(field.field, field.incoming)}
                           </p>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">

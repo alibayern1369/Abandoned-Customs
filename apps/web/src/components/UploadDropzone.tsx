@@ -19,9 +19,19 @@ export function UploadDropzone() {
           method: 'POST',
           body: fd,
         });
-        const data = (await res.json()) as { draftId?: string; error?: string };
+        const data = (await res.json()) as {
+          draftId?: string;
+          batchId?: string;
+          applied?: boolean;
+          error?: string;
+        };
         if (!res.ok || !data.draftId) {
           setError(data.error || 'آپلود ناموفق بود');
+          return;
+        }
+        if (data.applied && data.batchId) {
+          router.push(`/imports/${data.batchId}`);
+          router.refresh();
           return;
         }
         router.push(`/imports/upload/${data.draftId}`);

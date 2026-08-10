@@ -120,6 +120,7 @@ describe('mapFile1Kootaj', () => {
     assert.equal(mapped.sourceOrigin, 'FILE1');
     assert.equal(mapped.normalizedKootaj, '800001');
     assert.equal(mapped.rialValue, '1000');
+    assert.equal(mapped.ownerName, 'سازمان اموال تملیکی');
     assert.equal(mapped.assessmentLocation, 'کیش');
     assert.equal(mapped.hasParentFieldConflict, false);
   });

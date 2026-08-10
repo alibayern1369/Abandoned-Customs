@@ -6,11 +6,15 @@ import { FILE1_FIELDS } from '../aggregate.js';
 import type { ExcelRow, KootajRecord } from '../types.js';
 import { itemNumeric, itemText, levelNumeric, levelText, stripInternalKeys } from './map-helpers.js';
 
+/** Owner of abandoned (متروکه) goods — File1 has no separate owner column. */
+export const FILE1_DEFAULT_OWNER_NAME = 'سازمان اموال تملیکی';
+
 export interface File1KootajInsert {
   normalizedKootaj: string;
   displayKootaj: string | null;
   sourceOrigin: 'FILE1';
   kootajDate: string | null;
+  ownerName: string | null;
   assessmentLocation: string | null;
   declarationStage: string | null;
   rialValue: string | null;
@@ -43,6 +47,7 @@ export function mapFile1Kootaj(record: KootajRecord): File1KootajInsert {
     displayKootaj: record.original_values[0] ?? record.normalized_kootaj,
     sourceOrigin: 'FILE1',
     kootajDate: levelText(level, 'تاریخ کوتاژ'),
+    ownerName: FILE1_DEFAULT_OWNER_NAME,
     assessmentLocation: levelText(level, 'محل ارزیابی'),
     declarationStage: levelText(level, 'مرحله اظهارنامه'),
     rialValue: levelNumeric(level, 'ارزش ریالی کالا'),
