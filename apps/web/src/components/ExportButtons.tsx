@@ -18,14 +18,14 @@ export function ExportButtons({
     <div className="flex flex-wrap gap-2">
       <a
         href={excelHref}
-        className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-medium transition hover:border-accent hover:bg-accent-soft"
+        className="rounded-full border border-line bg-elevated px-3.5 py-2 text-sm font-medium text-ink transition hover:border-accent hover:bg-accent-soft"
       >
         خروجی Excel
       </a>
       <Link
         href={printHref}
         target="_blank"
-        className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-medium transition hover:border-accent hover:bg-accent-soft"
+        className="rounded-full border border-line bg-elevated px-3.5 py-2 text-sm font-medium text-ink transition hover:border-accent hover:bg-accent-soft"
       >
         خروجی PDF / پرینت
       </Link>

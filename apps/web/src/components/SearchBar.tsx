@@ -33,13 +33,13 @@ export function SearchBar({
           name="q"
           defaultValue={defaultValue}
           placeholder="شماره کوتاژ یا قبض انبار…"
-          className="w-full rounded-2xl border border-line bg-elevated px-4 py-3 text-sm shadow-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
       <button
         type="submit"
         disabled={pending}
-        className="mt-3 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-60 sm:absolute sm:left-2 sm:top-[1.65rem] sm:mt-0"
+        className="mt-3 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-60 sm:absolute sm:left-2 sm:top-[1.65rem] sm:mt-0"
       >
         {pending ? '…' : 'جستجو'}
       </button>

@@ -37,7 +37,7 @@ export default async function DashboardPage() {
         {stats.recentBatches.length === 0 ? (
           <EmptyState message="هنوز هیچ batch ورودی ثبت نشده است." />
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-2xl border border-line bg-elevated shadow-panel">
             <table className="w-full min-w-[40rem] text-sm">
               <thead>
                 <tr className="border-b border-line text-right text-muted">

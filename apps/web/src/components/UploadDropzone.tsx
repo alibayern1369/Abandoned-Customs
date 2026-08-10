@@ -46,7 +46,9 @@ export function UploadDropzone() {
           if (file) void upload(file);
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-16 text-center transition ${
-          dragOver ? 'border-accent bg-accent-soft' : 'border-line bg-elevated/70 hover:border-accent/50'
+          dragOver
+            ? 'border-accent bg-accent-soft'
+            : 'border-line bg-surface hover:border-accent/40'
         }`}
       >
         <p className="text-lg font-semibold text-ink">فایل اکسل را اینجا رها کنید</p>
@@ -65,7 +67,11 @@ export function UploadDropzone() {
         />
         {pending ? <p className="mt-4 text-sm text-accent">در حال پردازش…</p> : null}
       </label>
-      {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
+      {error ? (
+        <p className="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-danger">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

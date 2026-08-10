@@ -58,7 +58,7 @@ export default async function KootajDetailPage({
           <Link
             href={`/kootajs/${id}/print`}
             target="_blank"
-            className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-medium hover:bg-accent-soft"
+            className="rounded-full border border-line bg-elevated px-3.5 py-2 text-sm font-medium transition hover:bg-accent-soft"
           >
             پرینت / PDF
           </Link>
@@ -81,11 +81,11 @@ export default async function KootajDetailPage({
         <p className="mb-4 text-sm text-warn">این کوتاژ تعارض فیلد والد دارد.</p>
       ) : null}
 
-      <section className="rounded-2xl border border-line bg-elevated/70 p-4 sm:p-5">
+      <section className="rounded-2xl border border-line bg-elevated p-4 shadow-panel sm:p-5">
         <h3 className="mb-4 text-base font-semibold">اطلاعات کوتاژ</h3>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {fields.map(([label, value]) => (
-            <div key={label} className="rounded-xl bg-surface/60 px-3 py-2.5">
+            <div key={label} className="rounded-xl bg-surface px-3 py-2.5">
               <p className="text-xs text-muted">{label}</p>
               <p className="mt-0.5 text-sm font-medium">{value || '—'}</p>
             </div>
@@ -93,25 +93,25 @@ export default async function KootajDetailPage({
         </div>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-line bg-elevated/70 p-4 sm:p-5">
+      <section className="mt-6 rounded-2xl border border-line bg-elevated p-4 shadow-panel sm:p-5">
         <h3 className="mb-3 text-base font-semibold">نامه</h3>
         {!letter ? (
           <EmptyState message="نامه‌ای به این کوتاژ الصاق نشده است." />
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl bg-surface/60 px-3 py-2.5">
+            <div className="rounded-xl bg-surface px-3 py-2.5">
               <p className="text-xs text-muted">شماره نامه</p>
               <p className="font-medium">{letter.letterNumber}</p>
             </div>
-            <div className="rounded-xl bg-surface/60 px-3 py-2.5">
+            <div className="rounded-xl bg-surface px-3 py-2.5">
               <p className="text-xs text-muted">تاریخ</p>
               <p className="font-medium">{letter.letterDate || '—'}</p>
             </div>
-            <div className="rounded-xl bg-surface/60 px-3 py-2.5">
+            <div className="rounded-xl bg-surface px-3 py-2.5">
               <p className="text-xs text-muted">ثبت‌کننده</p>
               <p className="font-medium">{letter.registrar || '—'}</p>
             </div>
-            <div className="rounded-xl bg-surface/60 px-3 py-2.5 sm:col-span-2 lg:col-span-3">
+            <div className="rounded-xl bg-surface px-3 py-2.5 sm:col-span-2 lg:col-span-3">
               <p className="text-xs text-muted">شرح</p>
               <p className="font-medium whitespace-pre-wrap">{letter.description || '—'}</p>
             </div>
@@ -119,7 +119,7 @@ export default async function KootajDetailPage({
         )}
       </section>
 
-      <section className="mt-6 rounded-2xl border border-line bg-elevated/70 p-4 sm:p-5">
+      <section className="mt-6 rounded-2xl border border-line bg-elevated p-4 shadow-panel sm:p-5">
         <h3 className="mb-3 text-base font-semibold">اقلام ({faNumber(items.length)})</h3>
         {items.length === 0 ? (
           <EmptyState message="قلم کالایی ثبت نشده است." />
@@ -158,14 +158,14 @@ export default async function KootajDetailPage({
         )}
       </section>
 
-      <section className="mt-6 rounded-2xl border border-line bg-elevated/70 p-4 sm:p-5">
+      <section className="mt-6 rounded-2xl border border-line bg-elevated p-4 shadow-panel sm:p-5">
         <h3 className="mb-3 text-base font-semibold">موارد بررسی مرتبط</h3>
         {reviews.length === 0 ? (
           <EmptyState message="مورد بررسی‌ای برای این کوتاژ نیست." />
         ) : (
           <ul className="space-y-3">
             {reviews.map((review) => (
-              <li key={review.id} className="rounded-xl bg-surface/60 px-3 py-3">
+              <li key={review.id} className="rounded-xl bg-surface px-3 py-3">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone={review.status === 'OPEN' ? 'warn' : 'neutral'}>
                     {reviewStatusLabel(review.status)}

@@ -14,7 +14,7 @@ export function PrintTrigger() {
       <button
         type="button"
         onClick={() => window.print()}
-        className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white"
+        className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover"
       >
         چاپ / ذخیره PDF
       </button>

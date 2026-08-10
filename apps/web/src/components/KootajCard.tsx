@@ -11,14 +11,14 @@ export function KootajCard({ row }: { row: KootajListRow }) {
   return (
     <Link
       href={`/kootajs/${row.id}`}
-      className="group flex flex-col rounded-2xl border border-line bg-elevated/90 p-4 shadow-[0_1px_0_rgba(28,42,34,0.04)] transition hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md"
+      className="group flex flex-col rounded-2xl border border-line bg-elevated p-4 shadow-panel transition hover:-translate-y-0.5 hover:border-accent/30"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-lg font-bold tracking-tight text-ink group-hover:text-accent">
             {title}
           </p>
-          <p className="mt-0.5 text-xs tabular-nums text-muted">{row.normalizedKootaj}</p>
+          <p className="mt-0.5 text-xs tabular-nums text-faint">{row.normalizedKootaj}</p>
         </div>
         <div className="flex shrink-0 flex-wrap justify-end gap-1">
           {row.isComplete ? <Badge tone="ok">تکمیل</Badge> : null}
@@ -46,9 +46,13 @@ export function KootajCard({ row }: { row: KootajListRow }) {
         </div>
       </dl>
 
-      <div className="mt-4 flex items-center justify-between border-t border-line/70 pt-3 text-xs text-muted">
+      <div className="mt-4 flex items-center justify-between border-t border-line-soft pt-3 text-xs text-muted">
         <span>{sourceOriginLabel(row.sourceOrigin)}</span>
-        {openReviews ? <span className="text-warn">{faNumber(row.openReviewCount)} مورد باز</span> : <span>مشاهده جزئیات</span>}
+        {openReviews ? (
+          <span className="text-warn">{faNumber(row.openReviewCount)} مورد باز</span>
+        ) : (
+          <span>مشاهده جزئیات</span>
+        )}
       </div>
     </Link>
   );

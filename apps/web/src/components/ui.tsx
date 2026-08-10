@@ -38,7 +38,7 @@ export function StatLink({
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <p className="border border-dashed border-line px-4 py-10 text-center text-sm text-muted">
+    <p className="rounded-2xl border border-dashed border-line bg-surface px-4 py-10 text-center text-sm text-muted">
       {message}
     </p>
   );
@@ -77,12 +77,18 @@ export function Pagination({
       </p>
       <div className="flex gap-2">
         {page > 1 ? (
-          <Link href={href(page - 1)} className="rounded border border-line px-3 py-1.5 hover:bg-accent-soft">
+          <Link
+            href={href(page - 1)}
+            className="rounded-full border border-line bg-elevated px-3.5 py-1.5 text-ink transition hover:bg-accent-soft"
+          >
             قبلی
           </Link>
         ) : null}
         {page < totalPages ? (
-          <Link href={href(page + 1)} className="rounded border border-line px-3 py-1.5 hover:bg-accent-soft">
+          <Link
+            href={href(page + 1)}
+            className="rounded-full border border-line bg-elevated px-3.5 py-1.5 text-ink transition hover:bg-accent-soft"
+          >
             بعدی
           </Link>
         ) : null}
@@ -106,7 +112,9 @@ export function Badge({
   } as const;
 
   return (
-    <span className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${tones[tone]}`}>
+    <span
+      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${tones[tone]}`}
+    >
       {children}
     </span>
   );

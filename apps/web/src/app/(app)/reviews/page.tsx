@@ -39,13 +39,13 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
         description="resolve فقط وضعیت صف را می‌بندد و نامه/کوتاژ را خودکار تغییر نمی‌دهد."
       />
 
-      <form method="get" className="mb-6 flex flex-wrap gap-3">
+      <form method="get" className="mb-6 flex flex-wrap gap-3 rounded-2xl border border-line bg-elevated p-4 shadow-panel">
         <label>
           <span className="mb-1 block text-xs text-muted">وضعیت</span>
           <select
             name="status"
             defaultValue={status ?? ''}
-            className="rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+            className="rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           >
             <option value="">همه</option>
             {REVIEW_ITEM_STATUSES.map((s) => (
@@ -60,7 +60,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
           <select
             name="type"
             defaultValue={type ?? ''}
-            className="rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+            className="rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           >
             <option value="">همه</option>
             {REVIEW_ITEM_TYPES.map((t) => (
@@ -73,7 +73,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
         <div className="flex items-end">
           <button
             type="submit"
-            className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-hover"
           >
             فیلتر
           </button>
@@ -83,9 +83,9 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
       {result.rows.length === 0 ? (
         <EmptyState message="موردی در صف بررسی نیست." />
       ) : (
-        <ul className="space-y-5">
+        <ul className="space-y-4">
           {result.rows.map((row) => (
-            <li key={row.id} className="border-b border-line pb-5">
+            <li key={row.id} className="rounded-2xl border border-line bg-elevated p-4 shadow-panel">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
                   tone={
@@ -119,7 +119,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                   </Link>
                 </p>
               </div>
-              <pre className="mt-3 max-h-40 overflow-auto rounded bg-elevated p-3 text-xs text-muted">
+              <pre className="mt-3 max-h-40 overflow-auto rounded-xl bg-surface p-3 text-xs text-muted">
                 {JSON.stringify(row.payload ?? {}, null, 2)}
               </pre>
               {row.status === 'OPEN' ? (
@@ -129,11 +129,11 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                     <input
                       name="note"
                       placeholder="یادداشت حل (اختیاری)"
-                      className="w-full rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+                      className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                     <button
                       type="submit"
-                      className="rounded-md bg-ok px-3 py-1.5 text-sm font-medium text-white"
+                      className="rounded-full bg-ok px-3.5 py-1.5 text-sm font-medium text-white"
                     >
                       حل‌شده
                     </button>
@@ -143,11 +143,11 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Sear
                     <input
                       name="note"
                       placeholder="یادداشت نادیده (اختیاری)"
-                      className="w-full rounded-md border border-line bg-elevated px-3 py-2 text-sm"
+                      className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
                     />
                     <button
                       type="submit"
-                      className="rounded-md border border-line px-3 py-1.5 text-sm font-medium"
+                      className="rounded-full border border-line px-3.5 py-1.5 text-sm font-medium"
                     >
                       نادیده گرفتن
                     </button>

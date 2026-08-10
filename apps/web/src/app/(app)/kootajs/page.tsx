@@ -46,7 +46,7 @@ export default async function KootajsPage({ searchParams }: { searchParams: Sear
         <ExportButtons tab={tab} q={q || undefined} />
       </div>
 
-      <div className="mb-5 rounded-2xl border border-line bg-elevated/60 p-4 sm:p-5">
+      <div className="mb-5 rounded-2xl border border-line bg-elevated p-4 shadow-panel sm:p-5">
         <SearchBar defaultValue={q} tab={tab} />
       </div>
 

@@ -9,7 +9,7 @@ export default function UploadPage() {
         description="فایل را بارگذاری کنید؛ سیستم بر اساس ستون کوتاژ رکوردها را ایجاد یا تکمیل می‌کند و تداخل‌ها را برای تأیید نشان می‌دهد."
       />
       <UploadDropzone />
-      <div className="mt-6 rounded-2xl border border-line bg-elevated/50 p-4 text-sm text-muted">
+      <div className="mt-6 rounded-2xl border border-blue-100 bg-accent-soft p-4 text-sm text-muted">
         <p className="font-medium text-ink">نکات</p>
         <ul className="mt-2 list-disc space-y-1 pr-5">
           <li>کلید یکتا ستون «کوتاژ» است (یا شماره کوتاژ / مجوز بارگیری در فایل‌های استاندارد).</li>

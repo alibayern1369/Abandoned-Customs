@@ -78,7 +78,9 @@ export default async function ImportDetailPage({
       </section>
 
       {batch.errorMessage ? (
-        <p className="mt-4 text-sm text-danger">{batch.errorMessage}</p>
+        <p className="mt-4 rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-danger">
+          {batch.errorMessage}
+        </p>
       ) : null}
 
       <section className="mt-10">

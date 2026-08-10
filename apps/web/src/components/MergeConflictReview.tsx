@@ -70,7 +70,7 @@ export function MergeConflictReview({
       </div>
 
       {report.letters.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
+        <section className="rounded-2xl border border-line bg-elevated p-4 shadow-panel">
           <h3 className="mb-2 font-semibold">نامه‌ها</h3>
           <p className="text-sm text-muted">
             الصاق: {faNumber(report.summary.lettersAttach)} · تعارض:{' '}
@@ -81,7 +81,7 @@ export function MergeConflictReview({
             {report.letters
               .filter((letter) => letter.kind !== 'SKIP')
               .map((letter, idx) => (
-              <li key={idx} className="rounded-xl bg-surface/50 px-3 py-2">
+              <li key={idx} className="rounded-xl bg-surface px-3 py-2">
                 <Badge tone={letter.kind === 'CONFLICT' ? 'warn' : letter.kind === 'UNMATCHED' ? 'danger' : 'ok'}>
                   {letter.kind}
                 </Badge>{' '}
@@ -93,7 +93,7 @@ export function MergeConflictReview({
       ) : null}
 
       {creates.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
+        <section className="rounded-2xl border border-line bg-elevated p-4 shadow-panel">
           <h3 className="mb-2 font-semibold">کوتاژهای جدید ({faNumber(creates.length)})</h3>
           <div className="flex flex-wrap gap-2">
             {creates.slice(0, 40).map((c) => (
@@ -105,7 +105,7 @@ export function MergeConflictReview({
       ) : null}
 
       {fillOnly.length > 0 ? (
-        <section className="rounded-2xl border border-line bg-elevated/70 p-4">
+        <section className="rounded-2xl border border-line bg-elevated p-4 shadow-panel">
           <h3 className="mb-2 font-semibold">تکمیل خودکار فیلدهای خالی ({faNumber(fillOnly.length)})</h3>
           <p className="text-sm text-muted">به‌صورت پیش‌فرض از اکسل پر می‌شوند مگر رد کنید.</p>
         </section>
@@ -117,7 +117,7 @@ export function MergeConflictReview({
         <section className="space-y-4">
           <h3 className="font-semibold">تداخل‌ها — برای هر فیلد انتخاب کنید</h3>
           {conflictEntries.map((entry) => (
-            <div key={entry.normalizedKootaj} className="rounded-2xl border border-line bg-elevated/80 p-4">
+            <div key={entry.normalizedKootaj} className="rounded-2xl border border-line bg-elevated p-4 shadow-panel">
               <p className="mb-3 text-base font-bold">
                 {entry.displayKootaj || entry.normalizedKootaj}
               </p>
@@ -127,7 +127,7 @@ export function MergeConflictReview({
                   .map((field) => {
                     const key = `${entry.normalizedKootaj}::${field.field}`;
                     return (
-                      <div key={key} className="rounded-xl border border-line/80 bg-surface/40 p-3">
+                      <div key={key} className="rounded-xl border border-line bg-surface p-3">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           <span className="font-medium">{field.label}</span>
                           <Badge tone={field.action === 'CONFLICT' ? 'warn' : 'ok'}>
@@ -181,7 +181,7 @@ export function MergeConflictReview({
         type="button"
         disabled={pending}
         onClick={apply}
-        className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60"
+        className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-60"
       >
         {pending ? 'در حال اعمال…' : 'تأیید و اعمال ادغام'}
       </button>
@@ -199,7 +199,7 @@ function SummaryCard({
   tone?: 'warn';
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-elevated/80 px-4 py-3">
+    <div className="rounded-2xl border border-line bg-elevated px-4 py-3 shadow-panel">
       <p className="text-xs text-muted">{label}</p>
       <p className={`mt-1 text-2xl font-bold tabular-nums ${tone === 'warn' ? 'text-warn' : 'text-accent'}`}>
         {faNumber(value)}

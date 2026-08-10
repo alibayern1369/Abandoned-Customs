@@ -11,14 +11,14 @@ export default async function SettingsPage() {
         title="تنظیمات حساب"
         description="تغییر رمز عبور ورود به سامانه"
       />
-      <div className="mb-6 rounded-xl border border-line bg-elevated/50 px-4 py-3 text-sm">
+      <div className="mb-6 rounded-2xl border border-blue-100 bg-accent-soft px-4 py-3 text-sm">
         <p>
           <span className="text-muted">نام کاربری: </span>
-          <span className="font-medium">{user?.username}</span>
+          <span className="font-medium text-ink">{user?.username}</span>
         </p>
         <p className="mt-1">
           <span className="text-muted">نام نمایشی: </span>
-          <span className="font-medium">{user?.displayName}</span>
+          <span className="font-medium text-ink">{user?.displayName}</span>
         </p>
       </div>
       <ChangePasswordForm />

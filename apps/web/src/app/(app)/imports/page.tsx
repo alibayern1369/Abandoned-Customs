@@ -26,7 +26,7 @@ export default async function ImportsPage({ searchParams }: { searchParams: Sear
       {result.rows.length === 0 ? (
         <EmptyState message="هنوز batch ورودی وجود ندارد." />
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-2xl border border-line bg-elevated shadow-panel">
           <table className="w-full min-w-[48rem] text-sm">
             <thead>
               <tr className="border-b border-line text-right text-muted">
